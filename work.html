@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work — Andrés Quintero</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/versions.js"></script>
+</head>
+<body>
+  <header class="nav">
+    <a class="brand serif" href="index.html">Andrés Quintero</a>
+    <nav class="links category">
+      <a href="work.html" class="active">Work</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
+
+  <main class="work">
+    <aside class="projects">
+      <ul id="project-list"></ul>
+    </aside>
+
+    <section class="gallery">
+      <div class="main ph" id="main-image"></div>
+      <div class="thumbs" id="thumbs"></div>
+      <p class="caption category" id="caption"></p>
+    </section>
+  </main>
+
+  <script>
+    // Sample projects — replace with real ones. Each number = how many photos it has.
+    var PROJECTS = [
+      { name: 'Olivos',   year: '2025', photos: 6 },
+      { name: 'Marea',    year: '2024', photos: 4 },
+      { name: 'Cobre',    year: '2024', photos: 5 },
+      { name: 'Jazmín',   year: '2023', photos: 4 },
+      { name: 'Silencio', year: '2022', photos: 7 }
+    ];
+
+    var list = document.getElementById('project-list');
+    var thumbs = document.getElementById('thumbs');
+    var caption = document.getElementById('caption');
+    var activeProject = 0, activePhoto = 0;
+
+    PROJECTS.forEach(function (p, i) {
+      var li = document.createElement('li');
+      li.innerHTML = '<span class="project-name">' + p.name + '</span>' +
+        '<div class="meta category">' + p.year + ' — ' + p.photos + ' fotografías</div>';
+      li.addEventListener('click', function () { selectProject(i); });
+      list.appendChild(li);
+    });
+
+    function selectProject(i) {
+      activeProject = i;
+      activePhoto = 0;
+      list.querySelectorAll('li').forEach(function (li, j) {
+        li.classList.toggle('active', j === i);
+      });
+      thumbs.innerHTML = '';
+      for (var k = 0; k < PROJECTS[i].photos; k++) {
+        (function (k) {
+          var t = document.createElement('div');
+          t.className = 'ph';
+          t.addEventListener('click', function () { selectPhoto(k); });
+          thumbs.appendChild(t);
+        })(k);
+      }
+      selectPhoto(0);
+    }
+
+    function selectPhoto(k) {
+      activePhoto = k;
+      thumbs.querySelectorAll('.ph').forEach(function (t, j) {
+        t.classList.toggle('active', j === k);
+      });
+      caption.textContent = PROJECTS[activeProject].name + ' — ' + (k + 1) + ' / ' + PROJECTS[activeProject].photos;
+    }
+
+    selectProject(0);
+  </script>
+</body>
+</html>

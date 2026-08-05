@@ -1,0 +1,293 @@
+/* ————— Andrés Quintero — prototype styles ————— */
+
+/* Fonts (per AQ brandbook) */
+@font-face {
+  font-family: 'Libertinus Math';
+  src: url('https://cdn.jsdelivr.net/fontsource/fonts/libertinus-math@latest/latin-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DM Mono';
+  src: url('https://cdn.jsdelivr.net/fontsource/fonts/dm-mono@latest/latin-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'DM Mono';
+  src: url('https://cdn.jsdelivr.net/fontsource/fonts/dm-mono@latest/latin-300-normal.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+}
+
+:root {
+  --ink: #202020;
+  --paper: #ffffff;
+  --accent: #bd2828;
+  --line: #d9d9d9;
+  --serif: 'Libertinus Math', 'Libertinus Serif', Georgia, serif;
+  --mono: 'DM Mono', ui-monospace, monospace;
+  --margin: 32px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 0.03em;   /* brandbook: body tracking 3% */
+  line-height: 1.25;        /* brandbook: body leading 125% */
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+a:hover { color: var(--accent); }
+
+.serif {
+  font-family: var(--serif);
+  letter-spacing: 0;        /* brandbook: titles tracking 0 */
+  line-height: 1;           /* brandbook: titles leading 100% */
+}
+
+.category {
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;   /* brandbook: category tracking 12% */
+  line-height: 1.35;        /* brandbook: category leading 135% */
+  font-size: 11px;
+}
+
+/* ————— InDesign-style placeholder frame ————— */
+.ph {
+  position: relative;
+  background:
+    linear-gradient(to top right,
+      transparent calc(50% - 0.5px), var(--line) calc(50% - 0.5px),
+      var(--line) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+    linear-gradient(to bottom right,
+      transparent calc(50% - 0.5px), var(--line) calc(50% - 0.5px),
+      var(--line) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+  border: 1px solid var(--line);
+}
+
+/* ————— Inner-page nav ————— */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: var(--margin);
+  z-index: 10;
+  background: linear-gradient(var(--paper) 60%, transparent);
+}
+.nav .brand { font-family: var(--serif); font-size: 22px; }
+.nav .links { display: flex; gap: 24px; }
+.nav a.active { color: var(--accent); }
+
+/* ————— Landing page ————— */
+.landing {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+.landing img.hero {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.landing .overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 320px;
+  padding: 64px;
+  color: #fff;
+}
+.landing .overlay a { color: #fff; }
+.landing .overlay a:hover { opacity: 0.7; color: #fff; }
+.landing .menu { font-family: var(--serif); font-size: 28px; text-shadow: 0 0 1px rgba(0,0,0,0.25); }
+.landing .name { font-family: var(--serif); font-size: 48px; text-shadow: 0 0 1px rgba(0,0,0,0.25); }
+
+/* — Version B: corners — */
+body[data-v="b"] .landing .overlay {
+  align-items: initial;
+  justify-content: initial;
+  gap: 0;
+  padding: var(--margin);
+}
+body[data-v="b"] .landing .name {
+  position: absolute;
+  top: var(--margin); left: var(--margin);
+  font-size: 22px;
+}
+body[data-v="b"] .landing .menu {
+  position: absolute;
+  top: var(--margin); right: var(--margin);
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+/* — Version C: framed print — */
+body[data-v="c"] .landing { background: var(--paper); }
+body[data-v="c"] .landing img.hero {
+  inset: 64px;
+  width: calc(100% - 128px);
+  height: calc(100% - 160px);
+}
+body[data-v="c"] .landing .overlay {
+  color: var(--ink);
+  gap: 0;
+  padding: 0 64px 32px;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+body[data-v="c"] .landing .overlay a { color: var(--ink); }
+body[data-v="c"] .landing .overlay a:hover { color: var(--accent); }
+body[data-v="c"] .landing .name { font-size: 28px; text-shadow: none; }
+body[data-v="c"] .landing .menu {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-shadow: none;
+}
+
+/* ————— Work page: 7-column grid ————— */
+.work {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 20px;
+  padding: calc(var(--margin) + 80px) var(--margin) var(--margin);
+  min-height: 100vh;
+}
+.projects {
+  grid-column: 1 / span 3;
+}
+.projects ul { list-style: none; }
+.projects li { margin-bottom: 14px; }
+.projects .project-name {
+  font-family: var(--serif);
+  font-size: 34px;
+  cursor: pointer;
+  color: #b5b5b5;
+  transition: color 0.25s;
+  display: inline-block;
+}
+.projects li.active .project-name,
+.projects .project-name:hover { color: var(--ink); }
+.projects .meta {
+  display: none;
+  margin-top: 4px;
+}
+.projects li.active .meta { display: block; color: var(--accent); }
+
+.gallery {
+  grid-column: 4 / span 4;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.gallery .main {
+  width: 100%;
+  aspect-ratio: 774 / 549;
+}
+.gallery .thumbs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+.gallery .thumbs .ph {
+  aspect-ratio: 178 / 162;
+  cursor: pointer;
+}
+.gallery .thumbs .ph.active { border-color: var(--ink); }
+.gallery .caption { margin-top: 8px; }
+
+/* — work version variants — */
+body[data-v="b"] .projects .project-name {
+  font-family: var(--mono);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+body[data-v="c"] .projects .project-name { font-size: 24px; }
+body[data-v="c"] .projects li.active .project-name { color: var(--accent); }
+
+/* ————— About page ————— */
+.about {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 20px;
+  padding: calc(var(--margin) + 80px) var(--margin) 0;
+}
+.about .portrait-col { grid-column: 1 / span 3; }
+.about .portrait {
+  position: sticky;
+  top: calc(var(--margin) + 80px);
+  aspect-ratio: 3 / 4;
+  margin-bottom: 120px;
+}
+.about .text-col {
+  grid-column: 4 / span 4;
+  max-width: 620px;
+  padding-bottom: 40vh;
+}
+.about .lede {
+  font-family: var(--serif);
+  font-size: 34px;
+  line-height: 1.2;
+  margin-bottom: 80px;
+}
+.about .text-col p + p { margin-top: 1.6em; }
+.about .body-block { margin-bottom: 100px; font-size: 14px; }
+.about .inline-ph { aspect-ratio: 4 / 3; margin: 100px 0; }
+.about .contact { margin-bottom: 100px; }
+.about .contact a { border-bottom: 1px solid var(--ink); }
+.about .contact a:hover { border-color: var(--accent); }
+
+/* ————— Version widget ————— */
+.vwidget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+}
+.vwidget span.label { margin-right: 8px; color: #999; text-transform: uppercase; }
+.vwidget button {
+  all: unset;
+  cursor: pointer;
+  padding: 2px 7px;
+  color: #999;
+}
+.vwidget button:hover { color: var(--ink); }
+.vwidget button.active { color: var(--paper); background: var(--ink); }
+
+/* ————— Small screens (prototype-level only) ————— */
+@media (max-width: 800px) {
+  .work, .about { display: block; }
+  .projects { margin-bottom: 40px; }
+  .about .portrait { position: static; margin-bottom: 40px; }
+}
