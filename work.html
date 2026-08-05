@@ -120,6 +120,72 @@
       AQ.openLightbox({ ratio: p.photos[k][0] / p.photos[k][1], caption: captionFor(k) });
     });
 
+    // ————— Version D: one justified grid of every photo (VSCO / are.na) —————
+    // Rows are packed by aspect ratio; each row's height comes from the row's
+    // combined ratio, so every photo keeps its proportions exactly and the
+    // whole wall fits the viewport with no scroll.
+    var ALL = [];
+    PROJECTS.forEach(function (p) {
+      p.photos.forEach(function (ratio, k) {
+        ALL.push({ ratio: ratio, caption: p.name + ' — ' + (k + 1) + ' / ' + p.photos.length });
+      });
+    });
+
+    function buildWall() {
+      thumbs.innerHTML = '';
+      var GAP = 8;
+      var W = thumbs.clientWidth;
+      var H = thumbs.clientHeight;
+      if (!W || !H) return;
+      var ratios = ALL.map(function (ph) { return ph.ratio[0] / ph.ratio[1]; });
+      var totalR = ratios.reduce(function (s, r) { return s + r; }, 0);
+      var R = Math.max(1, Math.round(Math.sqrt(H * totalR / W)));
+      var perRow = totalR / R;
+
+      // greedy partition into R rows of similar combined ratio
+      var rows = [], row = [], sum = 0;
+      ALL.forEach(function (ph, i) {
+        row.push(i); sum += ratios[i];
+        if (sum >= perRow && rows.length < R - 1) { rows.push(row); row = []; sum = 0; }
+      });
+      if (row.length) rows.push(row);
+
+      // natural height of each justified row, then scale everything to fit
+      var heights = rows.map(function (r) {
+        var s = r.reduce(function (acc, i) { return acc + ratios[i]; }, 0);
+        return (W - GAP * (r.length - 1)) / s;
+      });
+      var total = heights.reduce(function (s, h) { return s + h; }, 0) + GAP * (rows.length - 1);
+      var f = Math.min(1, (H - GAP * (rows.length - 1)) / (total - GAP * (rows.length - 1)));
+
+      rows.forEach(function (r, ri) {
+        var div = document.createElement('div');
+        div.className = 'grid-row';
+        var h = heights[ri] * f;
+        r.forEach(function (i) {
+          var img = phImg(ALL[i].ratio, false);
+          img.style.height = Math.floor(h) + 'px';
+          img.style.width = Math.floor(h * ratios[i]) + 'px';
+          img.title = ALL[i].caption;
+          img.addEventListener('click', function () {
+            AQ.openLightbox({ ratio: ratios[i], caption: ALL[i].caption });
+          });
+          div.appendChild(img);
+        });
+        thumbs.appendChild(div);
+      });
+      caption.textContent = ALL.length + ' fotografías';
+    }
+
+    function render() {
+      if (document.body.dataset.v === 'd') buildWall();
+      else selectProject(activeProject);
+    }
+    document.addEventListener('aq:version', render);
+    window.addEventListener('resize', function () {
+      if (document.body.dataset.v === 'd') buildWall();
+    });
+
     selectProject(0);
   </script>
 </body>

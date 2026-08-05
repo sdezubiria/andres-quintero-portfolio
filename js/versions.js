@@ -1,7 +1,7 @@
 // Version widget + shared lightbox.
 // The version choice persists across pages (localStorage) and is shareable via ?v=.
 (function () {
-  var VERSIONS = ['a', 'b', 'c'];
+  var VERSIONS = ['a', 'b', 'c', 'd'];
   var param = new URLSearchParams(location.search).get('v');
   var current = VERSIONS.includes(param) ? param : (localStorage.getItem('aq-version') || 'a');
 
@@ -15,6 +15,7 @@
     var url = new URL(location.href);
     url.searchParams.set('v', v);
     history.replaceState(null, '', url);
+    document.dispatchEvent(new CustomEvent('aq:version', { detail: v }));
     document.querySelectorAll('a[href$=".html"], a[href*=".html?"]').forEach(function (a) {
       var href = new URL(a.getAttribute('href'), location.href);
       href.searchParams.set('v', v);
@@ -50,8 +51,9 @@
   var lbState = null;
 
   function fit(ratio) {
-    var maxW = innerWidth * (document.body.dataset.v === 'b' ? 0.70 : 0.88);
-    var maxH = innerHeight * (document.body.dataset.v === 'b' ? 0.72 : 0.80);
+    var v = document.body.dataset.v;
+    var maxW = innerWidth * (v === 'b' ? 0.70 : v === 'd' ? 0.92 : 0.88);
+    var maxH = innerHeight * (v === 'b' ? 0.72 : v === 'd' ? 0.86 : 0.80);
     var w = maxW, h = w / ratio;
     if (h > maxH) { h = maxH; w = h * ratio; }
     return { w: Math.round(w), h: Math.round(h) };

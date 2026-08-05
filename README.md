@@ -27,6 +27,10 @@ tiene scroll vertical — todo cabe en la ventana):
 - **C · Archivo** (ref. quentindebrieystudio.com) — nombre grande arriba a
   la izquierda, enlaces en mono debajo; work es una cuadrícula de miniaturas
   filtrada por la barra de proyectos. Hover: subrayado y etiqueta sobre la celda.
+- **D · Muro** (ref. VSCO / are.na) — sin división por proyectos: todas las
+  fotos en una cuadrícula justificada que reparte cada fila según la
+  proporción de cada foto y llena la ventana exacta, sin scroll. Portada y
+  about centrados. Hover: la pieza respira (leve zoom).
 
 Cada versión tiene su propio **lightbox** (clic en cualquier imagen): A y B
 sobre fondo blanco (B con caption en serif y más aire), C como cuarto oscuro.
