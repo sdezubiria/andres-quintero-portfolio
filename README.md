@@ -14,11 +14,24 @@ marcos de posición con X, estilo InDesign (clase CSS `.ph`).
 ## Widget de versiones
 
 Cada página tiene un widget flotante (abajo a la derecha) con las opciones
-**A / B / C** para que el cliente compare direcciones de diseño:
+**A / B / C**. Cada versión rediseña el layout completo (ninguna página
+tiene scroll vertical — todo cabe en la ventana):
 
-- **A** — como el Figma: nombre centrado abajo sobre la foto a sangre
-- **B** — esquinas: nombre arriba a la izquierda, menú en mono arriba a la derecha
-- **C** — enmarcada: la foto como copia impresa con margen blanco
+- **A · Retícula** — como el Figma: portada a sangre con el nombre centrado
+  abajo; work en retícula de 7 columnas (3 nombres + 4 imágenes con tira de
+  miniaturas). Hover: fundido suave de las imágenes.
+- **B · Editorial** (ref. sebastianfaena.com) — página blanca, nombre en
+  serif arriba a la derecha, la foto centrada como pliego; work muestra dos
+  imágenes grandes en díptico. Hover: el interletrado se abre y la copia
+  retrocede levemente.
+- **C · Archivo** (ref. quentindebrieystudio.com) — nombre grande arriba a
+  la izquierda, enlaces en mono debajo; work es una cuadrícula de miniaturas
+  filtrada por la barra de proyectos. Hover: subrayado y etiqueta sobre la celda.
+
+Cada versión tiene su propio **lightbox** (clic en cualquier imagen): A y B
+sobre fondo blanco (B con caption en serif y más aire), C como cuarto oscuro.
+Las fotos nunca se deforman: cada marcador lleva la proporción real de la
+foto (SVG transparente con las medidas) y escala como escalaría el archivo.
 
 La elección se guarda (localStorage) y se mantiene entre páginas; también
 se puede compartir con enlace, p. ej. `index.html?v=b`. Las variantes se
