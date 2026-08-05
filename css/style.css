@@ -231,7 +231,12 @@ body[data-v="c"] .landing .menu a:hover { text-decoration: underline; text-under
 
 /* — A: the 7-column grid — 3 for names, 4 for images, fits the viewport — */
 body[data-v="a"] .work { grid-template-columns: repeat(7, 1fr); }
-body[data-v="a"] .projects { grid-column: 1 / span 3; }
+body[data-v="a"] .projects {
+  grid-column: 1 / span 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 body[data-v="a"] .projects li { margin-bottom: 14px; }
 body[data-v="a"] .projects .project-name {
   font-family: var(--serif);
