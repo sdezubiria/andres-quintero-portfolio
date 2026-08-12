@@ -1,46 +1,67 @@
-# Andrés Quintero — Portfolio (prototype)
+# Andrés Quintero — Portfolio (prototipo)
 
 Prototipo en HTML simple para el portfolio del fotógrafo Andrés Quintero.
+No necesita servidor ni build: se abre `index.html` en el navegador.
 
 ## Páginas
 
-- `index.html` — página de entrada: fotografía a pantalla completa, nombre y navegación (ref. piariverola.com)
-- `work.html` — retícula de 7 columnas: 3 a la izquierda para los nombres de proyecto, 4 a la derecha para las imágenes; al hacer clic en un proyecto se cargan sus imágenes
-- `about.html` — biografía con retrato fijo (sticky) y texto que se desplaza (ref. fantasticman.com)
+- `index.html` — portada: una fotografía a pantalla completa, el nombre y la navegación
+- `work.html` — los proyectos y sus fotografías (ver «Versiones»)
+- `about.html` — biografía con retrato
 
-Como solo existe una fotografía por ahora, todas las demás imágenes son
-marcos de posición con X, estilo InDesign (clase CSS `.ph`).
+## Las fotografías
 
-## Widget de versiones
+**21 proyectos, 163 fotografías.** Cada versión muestra *todas* las fotografías
+del proyecto elegido; cuando no caben en la pantalla, la página se desplaza.
+
+Las fotos viven en `assets/img/<proyecto>/`, dos archivos por foto:
+
+- `01.jpg` — lado largo 1600 px, para la vista grande y el lightbox
+- `01-t.jpg` — lado largo 520 px, para las tiras de contacto y el muro
+
+Ninguna foto se deforma nunca: cada `<img>` lleva sus medidas reales y sólo se
+le pone un tope de altura por versión, así que escala como escalaría el archivo.
+
+### Regenerar las fotografías
+
+`js/photos.js` (la lista de proyectos y las medidas de cada foto) y todo
+`assets/img/` los genera un script a partir de una carpeta de originales:
+
+```bash
+./tools/build-photos.sh _fotos
+```
+
+Cada subcarpeta de `_fotos/` es un proyecto y su nombre es el que se muestra en
+la web. Sólo usa `sips`, que ya viene con macOS. La portada y el retrato salen
+de las dos rutas (`HERO`, `PORTRAIT`) que hay al principio del script.
+
+Los originales **no** están en el repositorio (ver `.gitignore`): quedan en el
+disco del fotógrafo y aquí sólo se guardan las versiones web.
+
+## Versiones
 
 Cada página tiene un widget flotante (abajo a la derecha) con las opciones
-**A / B / C**. Cada versión rediseña el layout completo (ninguna página
-tiene scroll vertical — todo cabe en la ventana):
+**A / B / C / D**. Cada una rediseña el layout completo:
 
 - **A · Retícula** — como el Figma: portada a sangre con el nombre centrado
-  abajo; work en retícula de 7 columnas (3 nombres + 4 imágenes con tira de
-  miniaturas). Hover: fundido suave de las imágenes.
-- **B · Editorial** (ref. sebastianfaena.com) — página blanca, nombre en
-  serif arriba a la derecha, la foto centrada como pliego; work muestra dos
-  imágenes grandes en díptico. Hover: el interletrado se abre y la copia
-  retrocede levemente.
-- **C · Archivo** (ref. quentindebrieystudio.com) — nombre grande arriba a
-  la izquierda, enlaces en mono debajo; work es una cuadrícula de miniaturas
-  filtrada por la barra de proyectos. Hover: subrayado y etiqueta sobre la celda.
-- **D · Muro** (ref. VSCO / are.na) — sin división por proyectos: todas las
-  fotos en una cuadrícula justificada que reparte cada fila según la
-  proporción de cada foto y llena la ventana exacta, sin scroll. Portada y
-  about centrados. Hover: la pieza respira (leve zoom).
+  abajo; en work, los nombres de proyecto a la izquierda, la foto elegida en
+  grande a la derecha y debajo la hoja de contacto con todas las demás.
+- **B · Editorial** (ref. sebastianfaena.com) — página blanca, nombre en serif
+  arriba a la derecha; en work el proyecto se recorre como una secuencia de
+  dípticos, dos copias grandes por fila con su pie en serif.
+- **C · Archivo** (ref. quentindebrieystudio.com) — nombre grande arriba a la
+  izquierda; en work los proyectos son una barra fija y las fotos una
+  cuadrícula de cuatro columnas.
+- **D · Muro** (ref. VSCO / are.na) — sin división por proyectos: las 163 fotos
+  en una cuadrícula justificada, cada fila ajustada al ancho exacto de la página.
 
-Cada versión tiene su propio **lightbox** (clic en cualquier imagen): A y B
-sobre fondo blanco (B con caption en serif y más aire), C como cuarto oscuro.
-Las fotos nunca se deforman: cada marcador lleva la proporción real de la
-foto (SVG transparente con las medidas) y escala como escalaría el archivo.
+Cada versión tiene su propio **lightbox** (clic en cualquier foto): A, B y D
+sobre fondo blanco, C como cuarto oscuro.
 
-La elección se guarda (localStorage) y se mantiene entre páginas; también
-se puede compartir con enlace, p. ej. `index.html?v=b`. Las variantes se
-definen en CSS con `body[data-v="..."]` — añadir una versión D es añadir
-un bloque más en `css/style.css` y una letra en `js/versions.js`.
+La elección se guarda (localStorage) y se mantiene entre páginas; también se
+puede compartir con enlace, p. ej. `index.html?v=b`. Las variantes se definen en
+CSS con `body[data-v="..."]` — añadir una versión E es añadir un bloque más en
+`css/style.css` y una letra en `js/versions.js`.
 
 ## Marca (AQ BRAND.pdf)
 
@@ -48,6 +69,9 @@ un bloque más en `css/style.css` y una letra en `js/versions.js`.
 - Secundaria: **DM Mono** — categorías en mayúscula (interletrado 12 %), cuerpo (interletrado 3 %, interlineado 125 %)
 - Paleta: `#202020` sobre `#FFFFFF`, acento `#BD2828`
 
-## Uso
+## Pendiente
 
-Abrir `index.html` en el navegador — no necesita servidor ni build.
+- La biografía de `about.html` es texto de relleno (lorem ipsum).
+- Los nombres de proyecto son los de las carpetas de origen, en mayúscula. Para
+  cambiarlos (acentos, mayúsculas y minúsculas, orden) se edita `name` en
+  `js/photos.js`.

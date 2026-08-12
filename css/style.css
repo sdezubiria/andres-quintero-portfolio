@@ -3,9 +3,12 @@
    A — Retícula   (the Figma: full-bleed landing, 7-column work page)
    B — Editorial  (ref. sebastianfaena.com: white page, serif name top-right, big spread)
    C — Archivo    (ref. quentindebrieystudio.com: big name top-left, thumbnail grid)
-   No page scrolls vertically — everything fits the viewport.
-   Photographs never change aspect ratio: boxes carry an aspect-ratio and
-   scale inside their container with max-width/max-height (letterboxed, not cropped). */
+   D — Muro       (ref. VSCO / are.na: one justified wall of every photograph)
+   Every version shows every photograph of the project: the page scrolls when
+   they don't all fit at once, and each photo is capped in vh so a screenful
+   always holds several of them.
+   Photographs never change aspect ratio: they scale by their own intrinsic
+   size with max-width/max-height (letterboxed, never cropped). */
 
 /* Fonts (per AQ brandbook) */
 @font-face {
@@ -33,9 +36,10 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html, body { height: 100%; }
+html { height: 100%; }
 
 body {
+  min-height: 100%;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--mono);
@@ -43,10 +47,12 @@ body {
   letter-spacing: 0.03em;   /* brandbook: body tracking 3% */
   line-height: 1.25;        /* brandbook: body leading 125% */
   -webkit-font-smoothing: antialiased;
-  overflow: hidden;         /* no vertical scroll anywhere */
   display: flex;
   flex-direction: column;
+  scroll-behavior: smooth;
 }
+/* the lightbox covers the page, so the page behind it must not scroll */
+body.lb-open { overflow: hidden; }
 
 a { color: inherit; text-decoration: none; }
 a:hover { color: var(--accent); }
@@ -65,8 +71,10 @@ a:hover { color: var(--accent); }
   font-size: 11px;
 }
 
-/* ————— InDesign-style placeholder frame ————— */
-.ph {
+/* ————— InDesign-style placeholder frame —————
+   Only for boxes with no photograph yet. A real photograph carries the extra
+   class .photo and keeps the layout rules below without the X and the frame. */
+.ph:not(.photo) {
   position: relative;
   background:
     linear-gradient(to top right,
@@ -86,29 +94,37 @@ a:hover { color: var(--accent); }
   min-height: 0;
   min-width: 0;
 }
-/* Placeholders are transparent SVG <img>s with the photo's intrinsic size,
-   so the browser scales them exactly like a real photograph. */
+/* Both real photographs and placeholders are <img>s with the photograph's
+   intrinsic size, so the browser scales them by their own proportions.
+   The height cap is set per version in vh — the page scrolls, so a percentage
+   of an auto-height container would mean nothing. */
+/* width and height must both stay `auto` — with a fixed width, the per-version
+   max-height would squash the picture instead of scaling it down. The inline
+   aspect-ratio set in JS keeps the box the right shape while the file loads. */
 .fit-wrap > .ph {
   display: block;
   max-width: 100%;
-  max-height: 100%;
   width: auto;
   height: auto;
 }
 
-/* ————— Inner-page nav (in flow, so nothing hides behind it) ————— */
+/* ————— Inner-page nav — sticky, so it stays reachable while scrolling ————— */
 .nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   padding: var(--margin);
   flex: none;
+  background: var(--paper);
 }
 .nav .brand { font-family: var(--serif); font-size: 22px; }
 .nav .links { display: flex; gap: 24px; }
 .nav a.active { color: var(--accent); }
 
-main.work, main.about { flex: 1; min-height: 0; }
+main.work, main.about { flex: 1; }
 
 /* ════════════ LANDING ════════════ */
 .landing {
@@ -245,20 +261,32 @@ body[data-v="d"] .landing .name a:hover { color: var(--accent); }
 /* ════════════ WORK ════════════ */
 .work {
   display: grid;
+  align-items: start;
   gap: 20px;
   padding: 0 var(--margin) var(--margin);
   position: relative;
 }
 
+/* The project list stays put while the photographs scroll past it. */
+.projects {
+  position: sticky;
+  top: 84px;
+  align-self: start;
+  max-height: calc(100vh - 104px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
 .projects ul { list-style: none; }
 .projects .project-name { cursor: pointer; transition: color 0.25s; display: inline-block; }
 .projects .meta { display: none; margin-top: 4px; }
 .projects li.active .meta { display: block; color: var(--accent); }
 
-.gallery { display: flex; min-height: 0; min-width: 0; }
-.gallery .thumbs { display: grid; gap: 20px; min-height: 0; }
+.gallery { display: flex; min-width: 0; }
+.gallery .thumbs { display: grid; gap: 20px; }
 .gallery .thumbs .cell { cursor: pointer; }
 .gallery .thumbs .cell.active > .ph { border-color: var(--ink); }
+/* on a real photograph the mark sits outside the frame, so nothing is covered */
+.gallery .thumbs .cell.active > .photo { outline: 1px solid var(--ink); outline-offset: 3px; }
 .gallery .main, .gallery .side { cursor: zoom-in; }
 
 /* — A: the 7-column grid — 3 for names, 4 for images, fits the viewport — */
@@ -269,10 +297,11 @@ body[data-v="a"] .projects {
   flex-direction: column;
   justify-content: center;
 }
-body[data-v="a"] .projects li { margin-bottom: 14px; }
+body[data-v="a"] .projects ul { margin: auto 0; }   /* centred while it fits */
+body[data-v="a"] .projects li { margin-bottom: 6px; }
 body[data-v="a"] .projects .project-name {
   font-family: var(--serif);
-  font-size: clamp(24px, 3vh, 34px);
+  font-size: clamp(15px, 2.1vh, 24px);
   color: #b5b5b5;
 }
 body[data-v="a"] .projects li.active .project-name,
@@ -282,14 +311,22 @@ body[data-v="a"] .gallery {
   flex-direction: column;
   gap: 10px;
 }
-body[data-v="a"] .gallery .main-wrap { flex: 1; }
+body[data-v="a"] .gallery .main-wrap { flex: none; }
+body[data-v="a"] .gallery .main-wrap > .photo { max-height: 74vh; }
 body[data-v="a"] .gallery .side-wrap { display: none; }
+/* Contact sheet under the big view: every photograph of the project, four
+   across, ragged rows because none of them is cropped to fit a cell. */
 body[data-v="a"] .gallery .thumbs {
   flex: none;
-  height: 13vh;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(4, 1fr);
+  align-items: start;
+  gap: 14px;
 }
-body[data-v="a"] .gallery .caption { flex: none; }
+body[data-v="a"] .thumbs .cell > .photo { max-height: 26vh; }
+/* the caption belongs to the big view, so it sits right under it */
+body[data-v="a"] .gallery .main-wrap { order: 1; }
+body[data-v="a"] .gallery .caption { order: 2; flex: none; margin-bottom: 10px; }
+body[data-v="a"] .gallery .thumbs { order: 3; }
 /* A hover: quiet fade */
 body[data-v="a"] .thumbs .ph { transition: opacity 0.25s; }
 body[data-v="a"] .thumbs .cell:hover > .ph { opacity: 0.55; }
@@ -298,8 +335,12 @@ body[data-v="a"] .main-wrap:hover .ph { opacity: 0.9; }
 
 /* — B: editorial spread — two big images, project names bottom-left — */
 body[data-v="b"] .work { grid-template-columns: 1fr 3fr; }
-body[data-v="b"] .projects { display: flex; flex-direction: column; justify-content: flex-end; }
-body[data-v="b"] .projects li { margin-bottom: 10px; }
+body[data-v="b"] .projects {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+body[data-v="b"] .projects li { margin-bottom: 8px; }
 body[data-v="b"] .projects .project-name {
   font-family: var(--mono);
   font-size: 11px;
@@ -310,22 +351,47 @@ body[data-v="b"] .projects .project-name {
 }
 body[data-v="b"] .projects li.active .project-name { color: var(--ink); }
 body[data-v="b"] .projects .project-name:hover { color: var(--ink); letter-spacing: 0.22em; }
-body[data-v="b"] .gallery { flex-direction: row; gap: 20px; }
-body[data-v="b"] .gallery .main-wrap { flex: 2; }
-body[data-v="b"] .gallery .side-wrap { display: flex; flex: 1; }
-body[data-v="b"] .gallery .thumbs { display: none; }
-body[data-v="b"] .gallery .caption {
-  position: absolute;
-  left: var(--margin); bottom: 10px;
+/* The whole project reads as a sequence of spreads: two big prints per row,
+   with air between them, scrolled through like the pages of a magazine. */
+body[data-v="b"] .gallery { flex-direction: column; }
+body[data-v="b"] .gallery .main-wrap,
+body[data-v="b"] .gallery .side-wrap { display: none; }
+body[data-v="b"] .gallery .thumbs {
+  grid-template-columns: repeat(2, 1fr);
+  align-items: end;
+  gap: 12vh 32px;
 }
+body[data-v="b"] .thumbs .cell {
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+body[data-v="b"] .thumbs .cell > .photo { max-height: 76vh; }
+body[data-v="b"] .thumbs .cell::after {
+  content: attr(data-caption);
+  font-family: var(--serif);
+  font-size: 15px;
+  color: #8a8a8a;
+}
+body[data-v="b"] .gallery .caption { display: none; }
 /* B hover: the print recedes slightly */
-body[data-v="b"] .gallery .ph { transition: transform 0.35s ease; }
-body[data-v="b"] .main-wrap:hover .ph, body[data-v="b"] .side-wrap:hover .ph { transform: scale(0.985); }
+body[data-v="b"] .thumbs .photo { transition: transform 0.35s ease; }
+body[data-v="b"] .thumbs .cell:hover > .photo { transform: scale(0.985); }
 
 /* — C: archive grid — project names as a top bar, thumbnails fill the page — */
 body[data-v="c"] .work {
   grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto;
+}
+/* the project bar is the navigation here, so it stays under the header */
+body[data-v="c"] .projects {
+  top: 76px;
+  max-height: none;
+  overflow: visible;
+  background: var(--paper);
+  padding: 8px 0 12px;
+  border-bottom: 1px solid var(--line);
+  z-index: 60;
 }
 body[data-v="c"] .projects ul { display: flex; gap: 28px; flex-wrap: wrap; }
 body[data-v="c"] .projects li { margin: 0; }
@@ -343,14 +409,17 @@ body[data-v="c"] .gallery { flex-direction: column; }
 body[data-v="c"] .gallery .main-wrap { display: none; }
 body[data-v="c"] .gallery .side-wrap { display: none; }
 body[data-v="c"] .gallery .thumbs {
-  flex: 1;
   grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: 1fr;
+  align-items: start;
+  gap: 24px 20px;
 }
-body[data-v="c"] .gallery .caption { flex: none; margin-top: 8px; }
+body[data-v="c"] .thumbs .cell > .photo { max-height: 34vh; }
+body[data-v="c"] .gallery .caption { flex: none; order: -1; margin-bottom: 12px; }
 /* C hover: cell fills faintly, label appears */
 body[data-v="c"] .thumbs .cell { position: relative; }
 body[data-v="c"] .thumbs .cell:hover > .ph { border-color: var(--ink); background-color: #f4f4f4; }
+body[data-v="c"] .thumbs .cell > .photo { transition: opacity 0.2s; }
+body[data-v="c"] .thumbs .cell:hover > .photo { opacity: 0.72; }
 body[data-v="c"] .thumbs .cell::after {
   content: attr(data-caption);
   position: absolute;
@@ -366,27 +435,23 @@ body[data-v="c"] .thumbs .cell:hover::after { opacity: 1; }
 /* — D: muro — no projects, one justified grid of every photo — */
 body[data-v="d"] .work {
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
+  grid-template-rows: auto;
 }
 body[data-v="d"] .projects { display: none; }
 body[data-v="d"] .gallery { flex-direction: column; }
 body[data-v="d"] .gallery .main-wrap, body[data-v="d"] .gallery .side-wrap { display: none; }
+/* One wall of every photograph: rows justified to the full width, scrolled. */
 body[data-v="d"] .gallery .thumbs {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  justify-content: center;
-  min-height: 0;
-  overflow: hidden;
 }
 body[data-v="d"] .thumbs .grid-row {
   display: flex;
   gap: 8px;
-  justify-content: center;
   flex: none;
 }
-body[data-v="d"] .gallery .caption { flex: none; margin-top: 8px; }
+body[data-v="d"] .gallery .caption { flex: none; order: -1; margin-bottom: 12px; }
 /* D hover: the tile breathes */
 body[data-v="d"] .thumbs img.ph {
   transition: transform 0.25s ease, background-color 0.25s;
@@ -400,12 +465,13 @@ body[data-v="d"] .thumbs img.ph:hover {
 /* ════════════ ABOUT ════════════ */
 .about {
   display: grid;
+  align-items: start;
   gap: 20px;
   padding: 0 var(--margin) var(--margin);
-  overflow: hidden;
 }
-.about .portrait-col { min-height: 0; }
-.about .portrait { aspect-ratio: 3 / 4; cursor: zoom-in; }
+.about .portrait { max-height: calc(100vh - 140px); }
+.about .portrait { cursor: zoom-in; }
+.about .portrait:not(.photo) { aspect-ratio: 3 / 4; }   /* only the empty frame */
 .about .text-col { display: flex; flex-direction: column; min-height: 0; }
 .about .lede { font-family: var(--serif); line-height: 1.2; }
 .about .text-col p + p { margin-top: 1.2em; }
@@ -450,7 +516,8 @@ body[data-v="d"] .about {
   text-align: center;
   gap: 20px;
 }
-body[data-v="d"] .about .portrait-col { flex: none; height: 28%; }
+body[data-v="d"] .about .portrait-col { flex: none; }
+body[data-v="d"] .about .portrait { max-height: 42vh; }
 body[data-v="d"] .about .text-col { max-width: 560px; flex: none; }
 body[data-v="d"] .about .lede { font-size: clamp(18px, 3vh, 28px); margin-bottom: 3vh; }
 body[data-v="d"] .about .body-block { font-size: 13px; }

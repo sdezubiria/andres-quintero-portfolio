@@ -79,8 +79,13 @@
     }
     cap.textContent = opts.caption || '';
     lb.hidden = false;
+    document.body.classList.add('lb-open');
   }
-  function closeLightbox() { lb.hidden = true; lbState = null; }
+  function closeLightbox() {
+    lb.hidden = true;
+    lbState = null;
+    document.body.classList.remove('lb-open');
+  }
 
   lb.addEventListener('click', closeLightbox);
   document.addEventListener('keydown', function (e) {

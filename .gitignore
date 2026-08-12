@@ -1,1 +1,9 @@
 .DS_Store
+
+# Fotografías originales: las masters se quedan en el disco del fotógrafo.
+# El repositorio guarda sólo las versiones web que genera tools/build-photos.sh.
+_fotos/
+imagenes.zip
+
+# Ajustes locales de Claude Code
+.claude/settings.local.json
