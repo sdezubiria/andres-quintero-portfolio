@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -85,7 +85,7 @@
     PROJECTS.forEach(function (p, i) {
       var li = document.createElement('li');
       li.innerHTML = '<span class="project-name"></span>' +
-        '<div class="meta category">' + p.photos.length + ' fotografías</div>';
+        '<div class="meta category">' + p.photos.length + ' photographs</div>';
       li.querySelector('.project-name').textContent = p.name;
       li.addEventListener('click', function () {
         if (document.body.dataset.v === 'x') { xJumpProject(i); return; }
@@ -209,7 +209,7 @@
         });
         thumbs.appendChild(div);
       });
-      caption.textContent = ALL.length + ' fotografías';
+      caption.textContent = ALL.length + ' photographs';
     }
 
     // ————— Version X: the archive as one continuous series —————

@@ -26,7 +26,7 @@
   var widget = document.createElement('div');
   widget.className = 'vwidget';
   widget.innerHTML =
-    '<span class="label">Versión</span>' +
+    '<span class="label">Version</span>' +
     VERSIONS.map(function (v) {
       return '<button data-v="' + v + '">' + v.toUpperCase() + '</button>';
     }).join('');
@@ -45,7 +45,7 @@
   lb.hidden = true;
   lb.innerHTML =
     '<span class="lb-btn lb-grid-btn" hidden>Thumbnails</span>' +
-    '<span class="lb-btn lb-close">Cerrar ✕</span>' +
+    '<span class="lb-btn lb-close">Close ✕</span>' +
     '<div class="lb-nav lb-prev" hidden></div>' +
     '<div class="lb-nav lb-next" hidden></div>' +
     '<figure>' +
