@@ -27,8 +27,14 @@
       <div class="side-wrap fit-wrap"></div>
       <div class="thumbs" id="thumbs"></div>
       <p class="caption category" id="caption"></p>
+      <!-- version X: the two halves that displace the series -->
+      <div class="x-nav x-prev" aria-hidden="true"></div>
+      <div class="x-nav x-next" aria-hidden="true"></div>
     </section>
   </main>
+
+  <!-- version X: one cover per project, very subtle -->
+  <button class="x-sheet-btn" type="button">Miniaturas</button>
 
   <script>
     // The real projects, generated from the photo folders by tools/build-photos.sh.
@@ -39,6 +45,19 @@
     function srcOf(p, k) { return 'assets/img/' + p.slug + '/' + pad(k + 1) + '.jpg'; }
     function thumbOf(p, k) { return 'assets/img/' + p.slug + '/' + pad(k + 1) + '-t.jpg'; }
     function pad(n) { return n < 10 ? '0' + n : String(n); }
+
+    // The whole project in the shape the lightbox understands, so it can be
+    // walked photo by photo (arrows, scroll, thumbnail sheet).
+    function galleryOf(p) {
+      return p.photos.map(function (ratio, k) {
+        return {
+          ratio: ratio[0] / ratio[1],
+          src: srcOf(p, k),
+          thumb: thumbOf(p, k),
+          caption: p.name + ' — ' + (k + 1) + ' / ' + p.photos.length
+        };
+      });
+    }
 
     // A photograph, sized by its own intrinsic proportions (width/height are the
     // real pixel dimensions), so the browser letterboxes it without ever cropping.
@@ -96,7 +115,7 @@
           if (document.body.dataset.v === 'a') {
             selectPhoto(k);
           } else {
-            AQ.openLightbox({ ratio: ratio[0] / ratio[1], caption: captionFor(k), src: srcOf(p, k) });
+            AQ.openLightbox({ photos: galleryOf(p), index: k });
           }
         });
         thumbs.appendChild(cell);
@@ -119,13 +138,12 @@
     }
 
     mainWrap.addEventListener('click', function () {
-      var p = PROJECTS[activeProject], r = p.photos[activePhoto];
-      AQ.openLightbox({ ratio: r[0] / r[1], caption: captionFor(activePhoto), src: srcOf(p, activePhoto) });
+      if (document.body.dataset.v === 'x') return;   // X has no lightbox
+      AQ.openLightbox({ photos: galleryOf(PROJECTS[activeProject]), index: activePhoto });
     });
     sideWrap.addEventListener('click', function () {
       var p = PROJECTS[activeProject];
-      var k = (activePhoto + 1) % p.photos.length;
-      AQ.openLightbox({ ratio: p.photos[k][0] / p.photos[k][1], caption: captionFor(k), src: srcOf(p, k) });
+      AQ.openLightbox({ photos: galleryOf(p), index: (activePhoto + 1) % p.photos.length });
     });
 
     // ————— Version D: one justified wall of every photo (VSCO / are.na) —————
@@ -142,6 +160,10 @@
           caption: p.name + ' — ' + (k + 1) + ' / ' + p.photos.length
         });
       });
+    });
+
+    var ALLG = ALL.map(function (ph) {
+      return { ratio: ph.ratio[0] / ph.ratio[1], src: ph.src, thumb: ph.thumb, caption: ph.caption };
     });
 
     function buildWall() {
@@ -180,7 +202,7 @@
           img.style.width = Math.floor(h * ratios[i]) + 'px';
           img.title = ALL[i].caption;
           img.addEventListener('click', function () {
-            AQ.openLightbox({ ratio: ratios[i], caption: ALL[i].caption, src: ALL[i].src });
+            AQ.openLightbox({ photos: ALLG, index: i });
           });
           div.appendChild(img);
         });
@@ -189,8 +211,97 @@
       caption.textContent = ALL.length + ' fotografías';
     }
 
+    // ————— Version X: the archive as one continuous series —————
+    // One photograph at a time; the halves (white-arrow cursor), the wheel,
+    // ← / → and a swipe displace it. No lightbox: this page is the viewer.
+    // «Miniaturas» swaps it for one cover per project, name underneath.
+    var xIndex = 0;
+    var xStart = [];   // first global index of each project
+    (function () {
+      var acc = 0;
+      PROJECTS.forEach(function (p) { xStart.push(acc); acc += p.photos.length; });
+    })();
+    var workMain = document.querySelector('main.work');
+    var sheetBtn = document.querySelector('.x-sheet-btn');
+
+    function xRender() {
+      var ph = ALL[xIndex];
+      var img = document.createElement('img');
+      img.className = 'ph photo';
+      img.alt = '';
+      img.decoding = 'async';
+      img.width = ph.ratio[0];
+      img.height = ph.ratio[1];
+      img.style.aspectRatio = ph.ratio[0] + ' / ' + ph.ratio[1];
+      img.src = ph.src;
+      mainWrap.innerHTML = '';
+      mainWrap.appendChild(img);
+      caption.textContent = ph.caption;
+      // the neighbours load quietly while this one is on screen
+      [1, -1].forEach(function (d) {
+        (new Image()).src = ALL[(xIndex + d + ALL.length) % ALL.length].src;
+      });
+    }
+    function xGo(d) {
+      xIndex = (xIndex + d + ALL.length) % ALL.length;
+      xRender();
+    }
+    function xSetGrid(on) {
+      workMain.classList.toggle('x-grid', on);
+      sheetBtn.textContent = on ? 'Volver' : 'Miniaturas';
+    }
+    function buildX() {
+      thumbs.innerHTML = '';
+      PROJECTS.forEach(function (p, i) {
+        var cell = document.createElement('div');
+        cell.className = 'cell fit-wrap';
+        cell.dataset.caption = p.name;
+        cell.appendChild(photoImg(p, 0, false));
+        cell.addEventListener('click', function () {
+          xIndex = xStart[i];
+          xSetGrid(false);
+          xRender();
+        });
+        thumbs.appendChild(cell);
+      });
+      xSetGrid(false);
+      xRender();
+    }
+    document.querySelector('.x-prev').addEventListener('click', function () { xGo(-1); });
+    document.querySelector('.x-next').addEventListener('click', function () { xGo(1); });
+    sheetBtn.addEventListener('click', function () {
+      xSetGrid(!workMain.classList.contains('x-grid'));
+    });
+    document.addEventListener('keydown', function (e) {
+      if (document.body.dataset.v !== 'x' || workMain.classList.contains('x-grid')) return;
+      if (e.key === 'ArrowRight') xGo(1);
+      else if (e.key === 'ArrowLeft') xGo(-1);
+    });
+    var xWheelAt = 0;
+    document.querySelector('.gallery').addEventListener('wheel', function (e) {
+      if (document.body.dataset.v !== 'x' || workMain.classList.contains('x-grid')) return;
+      e.preventDefault();
+      var now = Date.now();
+      if (now - xWheelAt < 350 || Math.abs(e.deltaY) < 8) return;
+      xWheelAt = now;
+      xGo(e.deltaY > 0 ? 1 : -1);
+    }, { passive: false });
+    // a swipe on a touch screen displaces the series too
+    var xTouchX = null;
+    document.querySelector('.gallery').addEventListener('touchstart', function (e) {
+      if (document.body.dataset.v !== 'x') return;
+      xTouchX = e.touches[0].clientX;
+    }, { passive: true });
+    document.querySelector('.gallery').addEventListener('touchend', function (e) {
+      if (document.body.dataset.v !== 'x' || xTouchX === null) return;
+      var dx = e.changedTouches[0].clientX - xTouchX;
+      xTouchX = null;
+      if (Math.abs(dx) > 40) xGo(dx < 0 ? 1 : -1);
+    });
+
     function render() {
       if (document.body.dataset.v === 'd') buildWall();
+      else if (document.body.dataset.v === 'x') buildX();
       else selectProject(activeProject);
       window.scrollTo(0, 0);
     }

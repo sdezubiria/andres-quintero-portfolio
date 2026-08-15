@@ -4,7 +4,13 @@
    B — Editorial  (ref. sebastianfaena.com: white page, serif name top-right, big spread)
    C — Archivo    (ref. quentindebrieystudio.com: big name top-left, thumbnail grid)
    D — Muro       (ref. VSCO / are.na: one justified wall of every photograph)
-   Every version shows every photograph of the project: the page scrolls when
+   X — Serie      (ref. emmanuelsmonsalve.com: A's intro with the name on top;
+                   work is ONE photograph at a time — the archive as a series,
+                   displaced with white-arrow cursors, scroll, keys or swipe;
+                   no lightbox, no side list: the project name sits very subtly
+                   under the photograph, and «Miniaturas» opens one cover per
+                   project. One single typeface.)
+   Every version (except X) shows every photograph of the project: the page scrolls when
    they don't all fit at once, and each photo is capped in vh so a screenful
    always holds several of them.
    Photographs never change aspect ratio: they scale by their own intrinsic
@@ -258,6 +264,31 @@ body[data-v="d"] .landing .menu {
 body[data-v="d"] .landing .menu a:hover { color: var(--accent); }
 body[data-v="d"] .landing .name a:hover { color: var(--accent); }
 
+/* — X: serie — A's full-bleed intro with the name moved to the top — */
+body[data-v="x"] .landing img.hero {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* full-bleed crop, ratio intact */
+  cursor: default;
+}
+body[data-v="x"] .landing .name {
+  font-family: var(--serif);
+  font-size: 48px;
+  left: 50%; transform: translateX(-50%);
+  top: 44px;
+  white-space: nowrap;
+}
+body[data-v="x"] .landing .menu {
+  font-family: var(--serif);
+  font-size: 28px;
+  left: 50%; transform: translateX(-50%);
+  bottom: 64px;
+}
+body[data-v="x"] .landing .overlay a { transition: opacity 0.25s; }
+body[data-v="x"] .landing .overlay a:hover { opacity: 0.6; color: #fff; }
+
 /* ════════════ WORK ════════════ */
 .work {
   display: grid;
@@ -462,6 +493,125 @@ body[data-v="d"] .thumbs img.ph:hover {
   background-color: #f4f4f4;
 }
 
+/* — X: serie — one photograph at a time; the whole archive is one series.
+   No side list and no lightbox: the page IS the viewer. The two halves of
+   the photograph displace the series (the cursor is a white arrow), so do
+   the wheel, ← / → and a swipe. The project name sits very subtly under
+   the photograph. «Miniaturas» opens one cover per project. — */
+/* one typeface only: everything in X is set in the serif */
+body[data-v="x"] {
+  font-family: var(--serif);
+  font-size: 15px;
+  letter-spacing: 0;
+  line-height: 1.3;
+}
+body[data-v="x"] .category {
+  font-family: var(--serif);
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-size: 14px;
+  line-height: 1.35;
+}
+body[data-v="x"] .work {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  flex: none;                      /* the page itself never scrolls */
+  height: calc(100vh - 86px);
+  height: calc(100dvh - 86px);
+  overflow: hidden;
+}
+body[data-v="x"] .projects { display: none; }
+body[data-v="x"] .gallery {
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;   /* photograph + name travel as one centred block */
+  height: 100%;
+}
+body[data-v="x"] .gallery .side-wrap,
+body[data-v="x"] .gallery .thumbs { display: none; }
+body[data-v="x"] .gallery .main-wrap {
+  flex: none;
+  min-height: 0;
+  width: 100%;
+}
+body[data-v="x"] .gallery .main-wrap > .photo {
+  max-height: calc(100vh - 175px);   /* nav + caption + margins stay visible */
+  max-height: calc(100dvh - 175px);
+}
+/* the project name, very subtle, under the photograph */
+body[data-v="x"] .gallery .caption {
+  flex: none;
+  margin-top: 14px;
+  font-size: 12px;
+  color: #a3a3a3;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+/* the two halves of the room: left goes back, right goes forward; the
+   cursor itself is a white arrow (kept legible by a faint dark halo) */
+.x-nav { display: none; }
+body[data-v="x"] .x-nav {
+  display: block;
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 50%;
+  z-index: 40;
+}
+body[data-v="x"] .x-prev {
+  left: 0;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M34%2020H6M16%2010L6%2020l10%2010' fill='none' stroke='%23202020' stroke-width='4' opacity='.4'/%3E%3Cpath d='M34%2020H6M16%2010L6%2020l10%2010' fill='none' stroke='%23ffffff' stroke-width='2'/%3E%3C/svg%3E") 20 20, w-resize;
+}
+body[data-v="x"] .x-next {
+  right: 0;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M6%2020h28M24%2010l10%2010-10%2010' fill='none' stroke='%23202020' stroke-width='4' opacity='.4'/%3E%3Cpath d='M6%2020h28M24%2010l10%2010-10%2010' fill='none' stroke='%23ffffff' stroke-width='2'/%3E%3C/svg%3E") 20 20, e-resize;
+}
+/* «Miniaturas» — quiet, in the lower left corner */
+.x-sheet-btn { display: none; }
+body[data-v="x"] .x-sheet-btn {
+  all: unset;
+  display: block;
+  position: fixed;
+  left: 20px; bottom: 20px;
+  z-index: 50;
+  font-family: var(--serif);
+  font-size: 13px;
+  color: #a3a3a3;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+body[data-v="x"] .x-sheet-btn:hover { color: var(--ink); }
+/* the sheet: one photograph per project, its name very subtle underneath */
+body[data-v="x"] main.work.x-grid { overflow-y: auto; }
+body[data-v="x"] .x-grid .gallery { height: auto; }
+body[data-v="x"] .x-grid .gallery .main-wrap,
+body[data-v="x"] .x-grid .gallery .caption,
+body[data-v="x"] .x-grid .x-nav { display: none; }
+body[data-v="x"] .x-grid .gallery .thumbs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 36px 20px;
+  width: 100%;
+  align-items: end;
+  padding-bottom: 64px;
+}
+body[data-v="x"] .x-grid .thumbs .cell {
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+}
+body[data-v="x"] .x-grid .thumbs .cell > .photo {
+  max-height: 32vh;
+  transition: opacity 0.25s;
+}
+body[data-v="x"] .x-grid .thumbs .cell:hover > .photo { opacity: 0.8; }
+body[data-v="x"] .x-grid .thumbs .cell::after {
+  content: attr(data-caption);
+  font-size: 11px;
+  color: #a3a3a3;
+  letter-spacing: 0.04em;
+}
+
 /* ════════════ ABOUT ════════════ */
 .about {
   display: grid;
@@ -525,6 +675,14 @@ body[data-v="d"] .about .contact { margin-top: 3vh; }
 body[data-v="d"] .about .portrait { transition: transform 0.25s ease; }
 body[data-v="d"] .about .portrait:hover { transform: scale(1.025); }
 
+/* — X: serie — A's about, set in the serif — */
+body[data-v="x"] .about { grid-template-columns: repeat(7, 1fr); }
+body[data-v="x"] .about .portrait-col { grid-column: 1 / span 3; }
+body[data-v="x"] .about .text-col { grid-column: 4 / span 4; max-width: 620px; }
+body[data-v="x"] .about .lede { font-size: clamp(20px, 3.4vh, 32px); margin-bottom: 5vh; }
+body[data-v="x"] .about .body-block { font-size: 15px; }
+body[data-v="x"] .about .portrait { cursor: default; }
+
 /* ════════════ LIGHTBOX ════════════ */
 .lightbox {
   position: fixed;
@@ -539,15 +697,65 @@ body[data-v="d"] .about .portrait:hover { transform: scale(1.025); }
   background: var(--paper);
 }
 .lightbox[hidden] { display: none; }
-.lightbox .lb-close {
+.lightbox .lb-btn {
   position: absolute;
-  top: var(--margin); right: var(--margin);
+  top: var(--margin);
+  z-index: 210;
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #999;
+  cursor: pointer;
 }
+.lightbox .lb-btn:hover { color: var(--ink); }
+.lightbox .lb-close { right: var(--margin); }
+.lightbox .lb-grid-btn { left: var(--margin); }
+.lightbox .lb-btn[hidden] { display: none; }
+
+/* The two halves of the room: left goes back, right goes forward. The cursor
+   itself is the arrow (ref. emmanuelsmonsalve.com). */
+.lightbox .lb-nav {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 50%;
+  z-index: 205;
+}
+.lightbox .lb-prev {
+  left: 0;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M34%2020H6M16%2010L6%2020l10%2010' fill='none' stroke='%23202020' stroke-width='2'/%3E%3C/svg%3E") 20 20, w-resize;
+}
+.lightbox .lb-next {
+  right: 0;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M6%2020h28M24%2010l10%2010-10%2010' fill='none' stroke='%23202020' stroke-width='2'/%3E%3C/svg%3E") 20 20, e-resize;
+}
+.lightbox .lb-nav[hidden] { display: none; }
+
+/* The thumbnail sheet: the whole project at a glance, scrolled if it is long */
+.lightbox .lb-thumbs {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 206;
+  overflow-y: auto;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-content: flex-start;
+  justify-content: center;
+  padding: 90px var(--margin) var(--margin);
+  cursor: default;
+  background: var(--paper);
+}
+.lightbox .lb-thumbs img {
+  height: 24vh;
+  width: auto;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.lightbox .lb-thumbs img:hover { opacity: 0.7; }
+.lightbox.lb-grid-mode figure { display: none; }
+.lightbox.lb-grid-mode .lb-nav { display: none; }
+.lightbox.lb-grid-mode .lb-thumbs { display: flex; }
 .lightbox figure { display: contents; }
 .lightbox .lb-box { max-width: 88vw; max-height: 80vh; }
 .lightbox img.lb-box { width: auto; height: auto; }
@@ -575,6 +783,14 @@ body[data-v="c"] .lightbox figcaption {
   font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: #fff;
 }
 body[data-v="c"] .lightbox .ph { background-color: rgba(255, 255, 255, 0.04); }
+body[data-v="c"] .lightbox .lb-prev {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M34%2020H6M16%2010L6%2020l10%2010' fill='none' stroke='%23ffffff' stroke-width='2'/%3E%3C/svg%3E") 20 20, w-resize;
+}
+body[data-v="c"] .lightbox .lb-next {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M6%2020h28M24%2010l10%2010-10%2010' fill='none' stroke='%23ffffff' stroke-width='2'/%3E%3C/svg%3E") 20 20, e-resize;
+}
+body[data-v="c"] .lightbox .lb-thumbs { background: #202020; }
+body[data-v="c"] .lightbox .lb-btn:hover { color: #fff; }
 
 /* ————— Version widget ————— */
 .vwidget {
@@ -601,3 +817,65 @@ body[data-v="c"] .lightbox .ph { background-color: rgba(255, 255, 255, 0.04); }
 }
 .vwidget button:hover { color: var(--ink); }
 .vwidget button.active { color: var(--paper); background: var(--ink); }
+
+
+/* ════════════ MOBILE ════════════
+   Tighter margins everywhere; version X becomes a swipeable viewer and the
+   other versions collapse their grids into one column. */
+@media (max-width: 700px) {
+  :root { --margin: 16px; }
+  body { font-size: 12px; }
+  .nav .brand { font-size: 18px; }
+  .nav .links { gap: 16px; }
+
+  /* — X: landing — */
+  body[data-v="x"] .landing .name { font-size: 30px; top: 20px; }
+  body[data-v="x"] .landing .menu { font-size: 20px; bottom: 36px; }
+
+  /* — X: viewer — tap either half or swipe; the photo fills the width — */
+  body[data-v="x"] .work {
+    height: calc(100vh - 62px);
+    height: calc(100dvh - 62px);
+    padding-bottom: 16px;
+  }
+  body[data-v="x"] .gallery .main-wrap > .photo {
+    max-height: calc(100vh - 135px);
+    max-height: calc(100dvh - 135px);
+  }
+  body[data-v="x"] .gallery .caption { margin-top: 10px; font-size: 11px; }
+  body[data-v="x"] .x-sheet-btn { left: 16px; bottom: 12px; font-size: 12px; }
+  body[data-v="x"] .x-grid .gallery .thumbs { grid-template-columns: repeat(2, 1fr); gap: 28px 12px; }
+  body[data-v="x"] .x-grid .thumbs .cell > .photo { max-height: none; }
+
+  /* — X: about stacks — */
+  body[data-v="x"] .about { display: flex; flex-direction: column; }
+  body[data-v="x"] .about .portrait { max-height: 60vh; }
+  body[data-v="x"] .about .text-col { max-width: none; }
+  body[data-v="x"] .about .contact { margin-top: 5vh; }
+
+  /* — A / B / C: one column, the list above the photographs — */
+  body[data-v="a"] .work, body[data-v="b"] .work, body[data-v="c"] .work { grid-template-columns: 1fr; }
+  body[data-v="a"] .projects, body[data-v="a"] .gallery { grid-column: auto; }
+  body[data-v="a"] .projects, body[data-v="b"] .projects {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+  body[data-v="a"] .gallery .thumbs { grid-template-columns: repeat(2, 1fr); }
+  body[data-v="b"] .gallery .thumbs { grid-template-columns: 1fr; gap: 8vh 0; }
+  body[data-v="c"] .gallery .thumbs { grid-template-columns: repeat(2, 1fr); }
+  body[data-v="a"] .about, body[data-v="c"] .about { grid-template-columns: 1fr; }
+  body[data-v="a"] .about .portrait-col, body[data-v="a"] .about .text-col { grid-column: auto; }
+  body[data-v="c"] .about .portrait-col { order: 1; }
+  body[data-v="c"] .about .text-col { order: 2; }
+
+  /* the landing texts of A/B/C/D breathe on a small screen */
+  body[data-v="a"] .landing .name { font-size: 30px; bottom: 40px; }
+  body[data-v="a"] .landing .menu { font-size: 20px; }
+  body[data-v="c"] .landing .menu { top: 90px; }
+
+  /* lightbox chrome */
+  .lightbox .lb-box { max-width: 94vw; max-height: 72vh; }
+  .lightbox .lb-thumbs { padding: 70px 16px 16px; gap: 10px; }
+  .lightbox .lb-thumbs img { height: 16vh; }
+}

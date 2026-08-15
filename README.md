@@ -11,8 +11,9 @@ No necesita servidor ni build: se abre `index.html` en el navegador.
 
 ## Las fotografías
 
-**21 proyectos, 163 fotografías.** Cada versión muestra *todas* las fotografías
-del proyecto elegido; cuando no caben en la pantalla, la página se desplaza.
+**21 proyectos, 163 fotografías.** Las versiones A–D muestran *todas* las
+fotografías del proyecto elegido (la página se desplaza cuando no caben);
+la versión X muestra una sola por vez y el resto se alcanza desplazando la serie.
 
 Las fotos viven en `assets/img/<proyecto>/`, dos archivos por foto:
 
@@ -41,7 +42,7 @@ disco del fotógrafo y aquí sólo se guardan las versiones web.
 ## Versiones
 
 Cada página tiene un widget flotante (abajo a la derecha) con las opciones
-**A / B / C / D**. Cada una rediseña el layout completo:
+**A / B / C / D / X**. Cada una rediseña el layout completo:
 
 - **A · Retícula** — como el Figma: portada a sangre con el nombre centrado
   abajo; en work, los nombres de proyecto a la izquierda, la foto elegida en
@@ -54,9 +55,22 @@ Cada página tiene un widget flotante (abajo a la derecha) con las opciones
   cuadrícula de cuatro columnas.
 - **D · Muro** (ref. VSCO / are.na) — sin división por proyectos: las 163 fotos
   en una cuadrícula justificada, cada fila ajustada al ancho exacto de la página.
+- **X · Serie** (ref. emmanuelsmonsalve.com) — la versión del feedback de Andrés,
+  y la que se abre por defecto. La intro de A con el nombre arriba; en work una
+  sola fotografía por vez — el archivo entero como una serie que se desplaza con
+  las dos mitades de la pantalla (el cursor es una flecha blanca), la rueda,
+  ← / → o un gesto en el teléfono. Sin lista lateral y sin lightbox: el nombre
+  del proyecto va muy sutil bajo la fotografía, y «Miniaturas» abre una portada
+  por proyecto. Una sola tipografía (la serif de la marca).
 
-Cada versión tiene su propio **lightbox** (clic en cualquier foto): A, B y D
-sobre fondo blanco, C como cuarto oscuro.
+En A–D cada versión tiene su propio **lightbox** (clic en cualquier foto): A, B
+y D sobre fondo blanco, C como cuarto oscuro. El lightbox recorre las fotos del
+mismo proyecto — clic en cada mitad (cursor de flecha), rueda, ← / → — y el
+botón «Miniaturas» muestra la hoja de contactos del proyecto. En X no hay
+lightbox: la propia página de work es el visor.
+
+Todo tiene una pasada **móvil** (≤ 700 px): X se vuelve un visor a lo ancho con
+gesto de swipe, y A–C colapsan sus retículas a una columna.
 
 La elección se guarda (localStorage) y se mantiene entre páginas; también se
 puede compartir con enlace, p. ej. `index.html?v=b`. Las variantes se definen en

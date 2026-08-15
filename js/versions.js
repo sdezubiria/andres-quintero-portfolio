@@ -1,9 +1,9 @@
 // Version widget + shared lightbox.
 // The version choice persists across pages (localStorage) and is shareable via ?v=.
 (function () {
-  var VERSIONS = ['a', 'b', 'c', 'd'];
+  var VERSIONS = ['a', 'b', 'c', 'd', 'x'];
   var param = new URLSearchParams(location.search).get('v');
-  var current = VERSIONS.includes(param) ? param : (localStorage.getItem('aq-version') || 'a');
+  var current = VERSIONS.includes(param) ? param : (localStorage.getItem('aq-version') || 'x');
 
   function apply(v) {
     current = v;
@@ -35,20 +35,27 @@
   });
 
   // ————— Lightbox —————
-  // Opens a placeholder (or a real image) at the largest size that fits the
-  // viewport WITHOUT changing its aspect ratio. Sizes are computed in JS so
-  // the ratio always wins over the container.
+  // Shows one photograph at the largest size that fits the viewport WITHOUT
+  // changing its aspect ratio. When it receives the whole project
+  // (openLightbox({photos: […], index})) it becomes navigable, like
+  // emmanuelsmonsalve.com: click on either half (arrow cursor), scroll,
+  // ← / →, and a thumbnail sheet behind the «Miniaturas» button.
   var lb = document.createElement('div');
   lb.className = 'lightbox';
   lb.hidden = true;
   lb.innerHTML =
-    '<span class="lb-close">Cerrar ✕</span>' +
+    '<span class="lb-btn lb-grid-btn" hidden>Miniaturas</span>' +
+    '<span class="lb-btn lb-close">Cerrar ✕</span>' +
+    '<div class="lb-nav lb-prev" hidden></div>' +
+    '<div class="lb-nav lb-next" hidden></div>' +
     '<figure>' +
     '  <div class="lb-box ph" hidden></div>' +
     '  <img class="lb-box" hidden alt="">' +
     '  <figcaption></figcaption>' +
-    '</figure>';
-  var lbState = null;
+    '</figure>' +
+    '<div class="lb-thumbs"></div>';
+
+  var lbPhotos = null, lbIndex = 0;
 
   function fit(ratio) {
     var v = document.body.dataset.v;
@@ -59,14 +66,13 @@
     return { w: Math.round(w), h: Math.round(h) };
   }
 
-  function openLightbox(opts) {
-    lbState = opts;
+  function renderPhoto() {
+    var ph = lbPhotos[lbIndex];
     var box = lb.querySelector('div.lb-box');
     var img = lb.querySelector('img.lb-box');
-    var cap = lb.querySelector('figcaption');
-    var size = fit(opts.ratio || 3 / 2);
-    if (opts.src) {
-      img.src = opts.src;
+    var size = fit(ph.ratio || 3 / 2);
+    if (ph.src) {
+      img.src = ph.src;
       img.style.maxWidth = size.w + 'px';
       img.style.maxHeight = size.h + 'px';
       img.hidden = false;
@@ -77,22 +83,96 @@
       box.hidden = false;
       img.hidden = true;
     }
-    cap.textContent = opts.caption || '';
+    lb.querySelector('figcaption').textContent = ph.caption || '';
+    // the neighbours load quietly while this one is on screen
+    if (lbPhotos.length > 1) {
+      [1, -1].forEach(function (d) {
+        var n = lbPhotos[(lbIndex + d + lbPhotos.length) % lbPhotos.length];
+        if (n.src) { (new Image()).src = n.src; }
+      });
+    }
+  }
+
+  function setGrid(on) {
+    lb.classList.toggle('lb-grid-mode', on);
+    lb.querySelector('.lb-grid-btn').textContent = on ? 'Volver' : 'Miniaturas';
+  }
+
+  function buildThumbs() {
+    var sheet = lb.querySelector('.lb-thumbs');
+    sheet.innerHTML = '';
+    if (lbPhotos.length < 2) return;
+    lbPhotos.forEach(function (ph, i) {
+      var img = document.createElement('img');
+      img.src = ph.thumb || ph.src;
+      img.alt = '';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      if (ph.ratio) img.style.aspectRatio = String(ph.ratio);
+      img.addEventListener('click', function (e) {
+        e.stopPropagation();
+        lbIndex = i;
+        setGrid(false);
+        renderPhoto();
+      });
+      sheet.appendChild(img);
+    });
+  }
+
+  function openLightbox(opts) {
+    lbPhotos = opts.photos || [{ ratio: opts.ratio, caption: opts.caption, src: opts.src }];
+    lbIndex = Math.min(opts.index || 0, lbPhotos.length - 1);
+    var multi = lbPhotos.length > 1;
+    lb.querySelector('.lb-prev').hidden = !multi;
+    lb.querySelector('.lb-next').hidden = !multi;
+    lb.querySelector('.lb-grid-btn').hidden = !multi;
+    setGrid(false);
+    buildThumbs();
+    renderPhoto();
     lb.hidden = false;
     document.body.classList.add('lb-open');
   }
+
   function closeLightbox() {
     lb.hidden = true;
-    lbState = null;
+    lbPhotos = null;
+    setGrid(false);
     document.body.classList.remove('lb-open');
   }
 
-  lb.addEventListener('click', closeLightbox);
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeLightbox();
+  function go(d) {
+    if (!lbPhotos || lbPhotos.length < 2) return;
+    lbIndex = (lbIndex + d + lbPhotos.length) % lbPhotos.length;
+    renderPhoto();
+  }
+
+  lb.addEventListener('click', function (e) {
+    if (e.target.closest('.lb-nav')) { go(e.target.closest('.lb-next') ? 1 : -1); return; }
+    if (e.target.closest('.lb-grid-btn')) { setGrid(!lb.classList.contains('lb-grid-mode')); return; }
+    if (e.target.closest('.lb-thumbs')) return;   // clicks on the sheet's white space
+    closeLightbox();
   });
+
+  document.addEventListener('keydown', function (e) {
+    if (lb.hidden) return;
+    if (e.key === 'Escape') closeLightbox();
+    else if (e.key === 'ArrowRight') go(1);
+    else if (e.key === 'ArrowLeft') go(-1);
+  });
+
+  // scrolling inside the lightbox walks the project (the sheet scrolls itself)
+  var wheelAt = 0;
+  lb.addEventListener('wheel', function (e) {
+    if (lb.classList.contains('lb-grid-mode')) return;
+    e.preventDefault();
+    var now = Date.now();
+    if (now - wheelAt < 350 || Math.abs(e.deltaY) < 8) return;
+    wheelAt = now;
+    go(e.deltaY > 0 ? 1 : -1);
+  }, { passive: false });
+
   window.addEventListener('resize', function () {
-    if (lbState) openLightbox(lbState);
+    if (!lb.hidden && lbPhotos) renderPhoto();
   });
   window.AQ = { openLightbox: openLightbox, version: function () { return current; } };
 
@@ -104,7 +184,8 @@
     // Anything marked data-lb opens the lightbox
     document.querySelectorAll('[data-lb]').forEach(function (el) {
       el.addEventListener('click', function () {
-        // in version A the landing photo is full-bleed background — no lightbox
+        // X has no lightbox at all; in A the landing photo is background
+        if (current === 'x') return;
         if (current === 'a' && el.classList.contains('hero')) return;
         var ratio;
         if (el.tagName === 'IMG' && el.naturalWidth) {
