@@ -326,10 +326,12 @@
     document.querySelector('.gallery').addEventListener('wheel', function (e) {
       if (document.body.dataset.v !== 'x' || workMain.classList.contains('x-grid')) return;
       e.preventDefault();
+      // dominant axis: a horizontal trackpad swipe displaces the series too
+      var delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
       var now = Date.now();
-      if (now - xWheelAt < 350 || Math.abs(e.deltaY) < 8) return;
+      if (now - xWheelAt < 350 || Math.abs(delta) < 8) return;
       xWheelAt = now;
-      xGo(e.deltaY > 0 ? 1 : -1);
+      xGo(delta > 0 ? 1 : -1);
     }, { passive: false });
     // a swipe on a touch screen displaces the series too
     var xTouchX = null;

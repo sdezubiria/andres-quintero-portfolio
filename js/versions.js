@@ -189,11 +189,26 @@
   lb.addEventListener('wheel', function (e) {
     if (lb.classList.contains('lb-grid-mode') || lbZoomed) return;
     e.preventDefault();
+    // dominant axis: a horizontal trackpad swipe navigates just like the wheel
+    var delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
     var now = Date.now();
-    if (now - wheelAt < 350 || Math.abs(e.deltaY) < 8) return;
+    if (now - wheelAt < 350 || Math.abs(delta) < 8) return;
     wheelAt = now;
-    go(e.deltaY > 0 ? 1 : -1);
+    go(delta > 0 ? 1 : -1);
   }, { passive: false });
+
+  // a swipe on a touch screen walks the project too
+  var lbTouchX = null;
+  lb.addEventListener('touchstart', function (e) {
+    lbTouchX = e.touches[0].clientX;
+  }, { passive: true });
+  lb.addEventListener('touchend', function (e) {
+    if (lbTouchX === null) return;
+    var dx = e.changedTouches[0].clientX - lbTouchX;
+    lbTouchX = null;
+    if (lb.classList.contains('lb-grid-mode') || lbZoomed) return;
+    if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+  });
 
   window.addEventListener('resize', function () {
     if (!lb.hidden && lbPhotos && !lbZoomed) renderPhoto();
