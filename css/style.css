@@ -6,8 +6,8 @@
    D — Muro       (ref. VSCO / are.na: one justified wall of every photograph)
    X — Serie      (ref. emmanuelsmonsalve.com: A's intro with the name on top;
                    work is one photograph at a time — two verticals pair up as
-                   a diptych — displaced with white-arrow cursors, scroll, keys
-                   or swipe; no lightbox. A few project titles on top (Show
+                   a diptych — displaced with arrow cursors, scroll, keys
+                   or swipe. A few project titles on top (Show
                    more expands them), the current name very subtle under the
                    photograph, «Thumbnails» opens one cover per project;
                    clicking inside the print opens a zoomable lightbox.
@@ -570,7 +570,7 @@ body[data-v="x"] .gallery .caption {
   text-align: center;
 }
 /* the two halves of the room: left goes back, right goes forward; the
-   cursor itself is a white arrow (kept legible by a faint dark halo) */
+   cursor itself is the arrow — the same dark one as the lightbox */
 .x-nav { display: none; }
 body[data-v="x"] .x-nav {
   display: block;
@@ -579,13 +579,14 @@ body[data-v="x"] .x-nav {
   width: 50%;
   z-index: 40;
 }
+/* the same dark arrows as the lightbox */
 body[data-v="x"] .x-prev {
   left: 0;
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M28%2016H4M12%208l-8%208%208%208' transform='translate(1%201)' fill='none' stroke='%23000000' stroke-opacity='.4' stroke-width='1.5'/%3E%3Cpath d='M28%2016H4M12%208l-8%208%208%208' fill='none' stroke='%23ffffff' stroke-width='1.5'/%3E%3C/svg%3E") 16 16, w-resize;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M34%2020H6M16%2010L6%2020l10%2010' fill='none' stroke='%23202020' stroke-width='2'/%3E%3C/svg%3E") 20 20, w-resize;
 }
 body[data-v="x"] .x-next {
   right: 0;
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M4%2016h24M20%208l8%208-8%208' transform='translate(1%201)' fill='none' stroke='%23000000' stroke-opacity='.4' stroke-width='1.5'/%3E%3Cpath d='M4%2016h24M20%208l8%208-8%208' fill='none' stroke='%23ffffff' stroke-width='1.5'/%3E%3C/svg%3E") 16 16, e-resize;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M6%2020h28M24%2010l10%2010-10%2010' fill='none' stroke='%23202020' stroke-width='2'/%3E%3C/svg%3E") 20 20, e-resize;
 }
 /* «Miniaturas» — quiet, in the lower left corner */
 .x-sheet-btn { display: none; }
