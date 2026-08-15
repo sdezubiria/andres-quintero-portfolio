@@ -9,7 +9,8 @@
                    a diptych — displaced with white-arrow cursors, scroll, keys
                    or swipe; no lightbox. A few project titles on top (Show
                    more expands them), the current name very subtle under the
-                   photograph, «Thumbnails» opens one cover per project.
+                   photograph, «Thumbnails» opens one cover per project;
+                   clicking inside the print opens a zoomable lightbox.
                    Texts in the mono, titles in the serif.)
    Every version (except X) shows every photograph of the project: the page scrolls when
    they don't all fit at once, and each photo is capped in vh so a screenful
@@ -554,6 +555,10 @@ body[data-v="x"] .gallery .main-wrap {
 body[data-v="x"] .gallery .main-wrap > .photo {
   max-height: calc(100vh - 250px);   /* nav + titles + caption + air below */
   max-height: calc(100dvh - 250px);
+  /* above the halves: inside the print you zoom, outside it you navigate */
+  position: relative;
+  z-index: 45;
+  cursor: zoom-in;
 }
 /* two verticals of the same project hang side by side (ref. E. Monsalve) */
 body[data-v="x"] .gallery .main-wrap.pair > .photo { max-width: calc(50% - 10px); }
@@ -576,11 +581,11 @@ body[data-v="x"] .x-nav {
 }
 body[data-v="x"] .x-prev {
   left: 0;
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M34%2020H6M16%2010L6%2020l10%2010' fill='none' stroke='%23202020' stroke-width='5' stroke-linecap='round' stroke-linejoin='round' opacity='.35'/%3E%3Cpath d='M34%2020H6M16%2010L6%2020l10%2010' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 20 20, w-resize;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M28%2016H4M12%208l-8%208%208%208' fill='none' stroke='%23202020' stroke-width='3.5' opacity='.35'/%3E%3Cpath d='M28%2016H4M12%208l-8%208%208%208' fill='none' stroke='%23ffffff' stroke-width='1.5'/%3E%3C/svg%3E") 16 16, w-resize;
 }
 body[data-v="x"] .x-next {
   right: 0;
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M6%2020h28M24%2010l10%2010-10%2010' fill='none' stroke='%23202020' stroke-width='5' stroke-linecap='round' stroke-linejoin='round' opacity='.35'/%3E%3Cpath d='M6%2020h28M24%2010l10%2010-10%2010' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 20 20, e-resize;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M4%2016h24M20%208l8%208-8%208' fill='none' stroke='%23202020' stroke-width='3.5' opacity='.35'/%3E%3Cpath d='M4%2016h24M20%208l8%208-8%208' fill='none' stroke='%23ffffff' stroke-width='1.5'/%3E%3C/svg%3E") 16 16, e-resize;
 }
 /* «Miniaturas» — quiet, in the lower left corner */
 .x-sheet-btn { display: none; }
@@ -724,7 +729,7 @@ body[data-v="x"] .about .portrait { cursor: default; }
 }
 .lightbox[hidden] { display: none; }
 .lightbox .lb-btn {
-  position: absolute;
+  position: fixed;
   top: var(--margin);
   z-index: 210;
   font-family: var(--mono);
@@ -784,8 +789,21 @@ body[data-v="x"] .about .portrait { cursor: default; }
 .lightbox.lb-grid-mode .lb-thumbs { display: flex; }
 .lightbox figure { display: contents; }
 .lightbox .lb-box { max-width: 88vw; max-height: 80vh; }
-.lightbox img.lb-box { width: auto; height: auto; }
+.lightbox img.lb-box { width: auto; height: auto; cursor: zoom-in; }
 .lightbox figcaption { font-family: var(--mono); }
+/* zoomed: the file at full size, panned by scrolling */
+.lightbox.lb-zoomed {
+  display: block;
+  overflow: auto;
+  cursor: zoom-out;
+}
+.lightbox.lb-zoomed figure { display: block; min-width: min-content; }
+.lightbox.lb-zoomed img.lb-box {
+  display: block;
+  margin: 0 auto;
+  cursor: zoom-out;
+}
+.lightbox.lb-zoomed figcaption { display: none; }
 
 /* A: plain white, mono caption */
 body[data-v="a"] .lightbox figcaption {

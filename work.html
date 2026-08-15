@@ -215,9 +215,10 @@
     // ————— Version X: the archive as one continuous series —————
     // One photograph at a time — two verticals of the same project hang side
     // by side as a diptych (ref. emmanuelsmonsalve.com). The halves (white
-    // arrow cursor), the wheel, ← / → and a swipe displace the series. No
-    // lightbox: this page is the viewer. A few titles on top («Show more»
-    // expands them) and «Thumbnails» swaps in one cover per project.
+    // arrow cursor, outside the print), the wheel, ← / → and a swipe displace
+    // the series; clicking inside the print opens a zoomable lightbox. A few
+    // titles on top («Show more» expands them) and «Thumbnails» swaps in one
+    // cover per project.
     var xSlides = [];      // each slide: { proj, idxs: [k] or [k, k+1] }
     var xProjSlide = [];   // first slide of each project
     PROJECTS.forEach(function (p, i) {
@@ -263,7 +264,18 @@
       var sl = xSlides[xIndex], p = PROJECTS[sl.proj];
       mainWrap.innerHTML = '';
       mainWrap.classList.toggle('pair', sl.idxs.length === 2);
-      sl.idxs.forEach(function (k) { mainWrap.appendChild(photoImg(p, k, true)); });
+      sl.idxs.forEach(function (k) {
+        var img = photoImg(p, k, true);
+        // inside the print: a zoomable lightbox; outside it, the halves navigate
+        img.addEventListener('click', function () {
+          AQ.openLightbox({
+            ratio: p.photos[k][0] / p.photos[k][1],
+            caption: p.name + ' — ' + (k + 1) + ' / ' + p.photos.length,
+            src: srcOf(p, k)
+          });
+        });
+        mainWrap.appendChild(img);
+      });
       var nums = sl.idxs.map(function (k) { return k + 1; }).join('–');
       caption.textContent = p.name + ' — ' + nums + ' / ' + p.photos.length;
       list.querySelectorAll('li').forEach(function (li, j) {

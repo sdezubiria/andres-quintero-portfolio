@@ -55,7 +55,7 @@
     '</figure>' +
     '<div class="lb-thumbs"></div>';
 
-  var lbPhotos = null, lbIndex = 0;
+  var lbPhotos = null, lbIndex = 0, lbZoomed = false;
 
   function fit(ratio) {
     var v = document.body.dataset.v;
@@ -93,6 +93,24 @@
     }
   }
 
+  // click the print: the file at full size, panned by scrolling
+  function setZoom(on) {
+    lbZoomed = on;
+    lb.classList.toggle('lb-zoomed', on);
+    var img = lb.querySelector('img.lb-box');
+    if (on) {
+      img.style.maxWidth = 'none';
+      img.style.maxHeight = 'none';
+      requestAnimationFrame(function () {
+        lb.scrollLeft = (lb.scrollWidth - lb.clientWidth) / 2;
+        lb.scrollTop = (lb.scrollHeight - lb.clientHeight) / 2;
+      });
+    } else {
+      lb.scrollLeft = lb.scrollTop = 0;
+      if (lbPhotos) renderPhoto();
+    }
+  }
+
   function setGrid(on) {
     lb.classList.toggle('lb-grid-mode', on);
     lb.querySelector('.lb-grid-btn').textContent = on ? 'Close thumbnails' : 'Thumbnails';
@@ -127,6 +145,8 @@
     lb.querySelector('.lb-next').hidden = !multi;
     lb.querySelector('.lb-grid-btn').hidden = !multi;
     setGrid(false);
+    lbZoomed = false;
+    lb.classList.remove('lb-zoomed');
     buildThumbs();
     renderPhoto();
     lb.hidden = false;
@@ -137,6 +157,8 @@
     lb.hidden = true;
     lbPhotos = null;
     setGrid(false);
+    lbZoomed = false;
+    lb.classList.remove('lb-zoomed');
     document.body.classList.remove('lb-open');
   }
 
@@ -147,6 +169,7 @@
   }
 
   lb.addEventListener('click', function (e) {
+    if (e.target.closest('img.lb-box')) { setZoom(!lbZoomed); return; }
     if (e.target.closest('.lb-nav')) { go(e.target.closest('.lb-next') ? 1 : -1); return; }
     if (e.target.closest('.lb-grid-btn')) { setGrid(!lb.classList.contains('lb-grid-mode')); return; }
     if (e.target.closest('.lb-thumbs')) return;   // clicks on the sheet's white space
@@ -163,7 +186,7 @@
   // scrolling inside the lightbox walks the project (the sheet scrolls itself)
   var wheelAt = 0;
   lb.addEventListener('wheel', function (e) {
-    if (lb.classList.contains('lb-grid-mode')) return;
+    if (lb.classList.contains('lb-grid-mode') || lbZoomed) return;
     e.preventDefault();
     var now = Date.now();
     if (now - wheelAt < 350 || Math.abs(e.deltaY) < 8) return;
@@ -172,7 +195,7 @@
   }, { passive: false });
 
   window.addEventListener('resize', function () {
-    if (!lb.hidden && lbPhotos) renderPhoto();
+    if (!lb.hidden && lbPhotos && !lbZoomed) renderPhoto();
   });
   window.AQ = { openLightbox: openLightbox, version: function () { return current; } };
 
