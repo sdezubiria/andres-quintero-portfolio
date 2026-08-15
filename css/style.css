@@ -592,10 +592,12 @@ body[data-v="x"] .x-sheet-btn {
   left: 20px; bottom: 20px;
   z-index: 50;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 9px;                  /* same voice as «Show more» */
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #a3a3a3;
+  color: #c9c9c9;
+  text-decoration: underline;
+  text-underline-offset: 3px;
   cursor: pointer;
   transition: color 0.2s;
 }
@@ -868,7 +870,7 @@ body[data-v="c"] .lightbox .lb-btn:hover { color: #fff; }
   body[data-v="x"] .gallery .main-wrap.pair > .photo { max-width: calc(50% - 5px); }
   body[data-v="x"] .gallery .caption { margin-top: 10px; }
   body[data-v="x"] .projects ul { gap: 6px 16px; }
-  body[data-v="x"] .x-sheet-btn { left: 16px; bottom: 12px; font-size: 12px; }
+  body[data-v="x"] .x-sheet-btn { left: 16px; bottom: 12px; }
   body[data-v="x"] .x-grid .gallery .thumbs { grid-template-columns: repeat(2, 1fr); gap: 28px 12px; }
   body[data-v="x"] .x-grid .thumbs .cell > .photo { max-height: none; }
 
