@@ -695,8 +695,14 @@ body[data-v="d"] .about .contact { margin-top: 3vh; }
 body[data-v="d"] .about .portrait { transition: transform 0.25s ease; }
 body[data-v="d"] .about .portrait:hover { transform: scale(1.025); }
 
-/* — X: serie — A's about, set in the serif — */
-body[data-v="x"] .about { grid-template-columns: repeat(7, 1fr); }
+/* — X: serie — A's about; portrait and text centred on each other — */
+body[data-v="x"] .about {
+  grid-template-columns: repeat(7, 1fr);
+  align-items: center;     /* the two columns centre on each other */
+  align-content: center;   /* and the whole row centres in the page */
+}
+body[data-v="x"] .about .contact { margin-top: 6vh; }
+body[data-v="x"] .about .contact a { border-bottom: none; }
 body[data-v="x"] .about .portrait-col { grid-column: 1 / span 3; }
 body[data-v="x"] .about .text-col { grid-column: 4 / span 4; max-width: 620px; }
 body[data-v="x"] .about .lede { font-size: clamp(20px, 3.4vh, 32px); margin-bottom: 5vh; }
