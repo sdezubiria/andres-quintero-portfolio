@@ -529,7 +529,12 @@ body[data-v="x"] .projects .meta { display: none !important; }
 body[data-v="x"] .projects li.x-hidden { display: none; }
 .x-more { display: none; }
 body[data-v="x"] li.x-more { display: block; }
-body[data-v="x"] li.x-more .project-name { color: #8a8a8a; text-decoration: underline; text-underline-offset: 3px; }
+body[data-v="x"] li.x-more .project-name {
+  font-size: 9px;
+  color: #c9c9c9;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 body[data-v="x"] li.x-more .project-name:hover { color: var(--ink); }
 body[data-v="x"] .gallery {
   position: relative;
