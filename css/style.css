@@ -5,11 +5,12 @@
    C — Archivo    (ref. quentindebrieystudio.com: big name top-left, thumbnail grid)
    D — Muro       (ref. VSCO / are.na: one justified wall of every photograph)
    X — Serie      (ref. emmanuelsmonsalve.com: A's intro with the name on top;
-                   work is ONE photograph at a time — the archive as a series,
-                   displaced with white-arrow cursors, scroll, keys or swipe;
-                   no lightbox, no side list: the project name sits very subtly
-                   under the photograph, and «Miniaturas» opens one cover per
-                   project. One single typeface.)
+                   work is one photograph at a time — two verticals pair up as
+                   a diptych — displaced with white-arrow cursors, scroll, keys
+                   or swipe; no lightbox. A few project titles on top (Show
+                   more expands them), the current name very subtle under the
+                   photograph, «Thumbnails» opens one cover per project.
+                   Texts in the mono, titles in the serif.)
    Every version (except X) shows every photograph of the project: the page scrolls when
    they don't all fit at once, and each photo is capped in vh so a screenful
    always holds several of them.
@@ -498,29 +499,38 @@ body[data-v="d"] .thumbs img.ph:hover {
    the photograph displace the series (the cursor is a white arrow), so do
    the wheel, ← / → and a swipe. The project name sits very subtly under
    the photograph. «Miniaturas» opens one cover per project. — */
-/* one typeface only: everything in X is set in the serif */
-body[data-v="x"] {
-  font-family: var(--serif);
-  font-size: 15px;
-  letter-spacing: 0;
-  line-height: 1.3;
-}
-body[data-v="x"] .category {
-  font-family: var(--serif);
-  text-transform: none;
-  letter-spacing: 0.02em;
-  font-size: 14px;
-  line-height: 1.35;
-}
 body[data-v="x"] .work {
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
+  grid-template-rows: auto 1fr;
   flex: none;                      /* the page itself never scrolls */
   height: calc(100vh - 86px);
   height: calc(100dvh - 86px);
   overflow: hidden;
 }
-body[data-v="x"] .projects { display: none; }
+/* a few project titles on top (like C's bar), the rest behind «Show more» */
+body[data-v="x"] .projects {
+  position: static;
+  max-height: none;
+  overflow: visible;
+  padding: 2px 0 14px;
+}
+body[data-v="x"] .projects ul { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+body[data-v="x"] .projects li { margin: 0; }
+body[data-v="x"] .projects .project-name {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #b5b5b5;
+}
+body[data-v="x"] .projects .project-name:hover { color: var(--ink); }
+body[data-v="x"] .projects li.active .project-name { color: var(--ink); }
+body[data-v="x"] .projects .meta { display: none !important; }
+body[data-v="x"] .projects li.x-hidden { display: none; }
+.x-more { display: none; }
+body[data-v="x"] li.x-more { display: block; }
+body[data-v="x"] li.x-more .project-name { color: #8a8a8a; text-decoration: underline; text-underline-offset: 3px; }
+body[data-v="x"] li.x-more .project-name:hover { color: var(--ink); }
 body[data-v="x"] .gallery {
   position: relative;
   flex-direction: column;
@@ -534,18 +544,19 @@ body[data-v="x"] .gallery .main-wrap {
   flex: none;
   min-height: 0;
   width: 100%;
+  gap: 20px;                        /* air between the two prints of a diptych */
 }
 body[data-v="x"] .gallery .main-wrap > .photo {
-  max-height: calc(100vh - 175px);   /* nav + caption + margins stay visible */
-  max-height: calc(100dvh - 175px);
+  max-height: calc(100vh - 215px);   /* nav + titles + caption stay visible */
+  max-height: calc(100dvh - 215px);
 }
+/* two verticals of the same project hang side by side (ref. E. Monsalve) */
+body[data-v="x"] .gallery .main-wrap.pair > .photo { max-width: calc(50% - 10px); }
 /* the project name, very subtle, under the photograph */
 body[data-v="x"] .gallery .caption {
   flex: none;
   margin-top: 14px;
-  font-size: 12px;
   color: #a3a3a3;
-  letter-spacing: 0.04em;
   text-align: center;
 }
 /* the two halves of the room: left goes back, right goes forward; the
@@ -574,8 +585,10 @@ body[data-v="x"] .x-sheet-btn {
   position: fixed;
   left: 20px; bottom: 20px;
   z-index: 50;
-  font-family: var(--serif);
-  font-size: 13px;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
   color: #a3a3a3;
   cursor: pointer;
   transition: color 0.2s;
@@ -607,9 +620,11 @@ body[data-v="x"] .x-grid .thumbs .cell > .photo {
 body[data-v="x"] .x-grid .thumbs .cell:hover > .photo { opacity: 0.8; }
 body[data-v="x"] .x-grid .thumbs .cell::after {
   content: attr(data-caption);
-  font-size: 11px;
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
   color: #a3a3a3;
-  letter-spacing: 0.04em;
 }
 
 /* ════════════ ABOUT ════════════ */
@@ -839,10 +854,13 @@ body[data-v="c"] .lightbox .lb-btn:hover { color: #fff; }
     padding-bottom: 16px;
   }
   body[data-v="x"] .gallery .main-wrap > .photo {
-    max-height: calc(100vh - 135px);
-    max-height: calc(100dvh - 135px);
+    max-height: calc(100vh - 190px);
+    max-height: calc(100dvh - 190px);
   }
-  body[data-v="x"] .gallery .caption { margin-top: 10px; font-size: 11px; }
+  body[data-v="x"] .gallery .main-wrap { gap: 10px; }
+  body[data-v="x"] .gallery .main-wrap.pair > .photo { max-width: calc(50% - 5px); }
+  body[data-v="x"] .gallery .caption { margin-top: 10px; }
+  body[data-v="x"] .projects ul { gap: 6px 16px; }
   body[data-v="x"] .x-sheet-btn { left: 16px; bottom: 12px; font-size: 12px; }
   body[data-v="x"] .x-grid .gallery .thumbs { grid-template-columns: repeat(2, 1fr); gap: 28px 12px; }
   body[data-v="x"] .x-grid .thumbs .cell > .photo { max-height: none; }

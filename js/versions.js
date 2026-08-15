@@ -39,12 +39,12 @@
   // changing its aspect ratio. When it receives the whole project
   // (openLightbox({photos: […], index})) it becomes navigable, like
   // emmanuelsmonsalve.com: click on either half (arrow cursor), scroll,
-  // ← / →, and a thumbnail sheet behind the «Miniaturas» button.
+  // ← / →, and a thumbnail sheet behind the «Thumbnails» button.
   var lb = document.createElement('div');
   lb.className = 'lightbox';
   lb.hidden = true;
   lb.innerHTML =
-    '<span class="lb-btn lb-grid-btn" hidden>Miniaturas</span>' +
+    '<span class="lb-btn lb-grid-btn" hidden>Thumbnails</span>' +
     '<span class="lb-btn lb-close">Cerrar ✕</span>' +
     '<div class="lb-nav lb-prev" hidden></div>' +
     '<div class="lb-nav lb-next" hidden></div>' +
@@ -95,7 +95,7 @@
 
   function setGrid(on) {
     lb.classList.toggle('lb-grid-mode', on);
-    lb.querySelector('.lb-grid-btn').textContent = on ? 'Volver' : 'Miniaturas';
+    lb.querySelector('.lb-grid-btn').textContent = on ? 'Close thumbnails' : 'Thumbnails';
   }
 
   function buildThumbs() {

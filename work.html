@@ -34,7 +34,7 @@
   </main>
 
   <!-- version X: one cover per project, very subtle -->
-  <button class="x-sheet-btn" type="button">Miniaturas</button>
+  <button class="x-sheet-btn" type="button">Thumbnails</button>
 
   <script>
     // The real projects, generated from the photo folders by tools/build-photos.sh.
@@ -88,6 +88,7 @@
         '<div class="meta category">' + p.photos.length + ' fotografías</div>';
       li.querySelector('.project-name').textContent = p.name;
       li.addEventListener('click', function () {
+        if (document.body.dataset.v === 'x') { xJumpProject(i); return; }
         selectProject(i);
         window.scrollTo({ top: 0 });   // a new project starts at its first photo
       });
@@ -212,43 +213,82 @@
     }
 
     // ————— Version X: the archive as one continuous series —————
-    // One photograph at a time; the halves (white-arrow cursor), the wheel,
-    // ← / → and a swipe displace it. No lightbox: this page is the viewer.
-    // «Miniaturas» swaps it for one cover per project, name underneath.
+    // One photograph at a time — two verticals of the same project hang side
+    // by side as a diptych (ref. emmanuelsmonsalve.com). The halves (white
+    // arrow cursor), the wheel, ← / → and a swipe displace the series. No
+    // lightbox: this page is the viewer. A few titles on top («Show more»
+    // expands them) and «Thumbnails» swaps in one cover per project.
+    var xSlides = [];      // each slide: { proj, idxs: [k] or [k, k+1] }
+    var xProjSlide = [];   // first slide of each project
+    PROJECTS.forEach(function (p, i) {
+      xProjSlide[i] = xSlides.length;
+      var k = 0;
+      while (k < p.photos.length) {
+        var a = p.photos[k], b = p.photos[k + 1];
+        if (b && a[0] < a[1] && b[0] < b[1]) {   // two verticals → one diptych
+          xSlides.push({ proj: i, idxs: [k, k + 1] });
+          k += 2;
+        } else {
+          xSlides.push({ proj: i, idxs: [k] });
+          k += 1;
+        }
+      }
+    });
     var xIndex = 0;
-    var xStart = [];   // first global index of each project
-    (function () {
-      var acc = 0;
-      PROJECTS.forEach(function (p) { xStart.push(acc); acc += p.photos.length; });
-    })();
     var workMain = document.querySelector('main.work');
     var sheetBtn = document.querySelector('.x-sheet-btn');
 
+    // the titles bar shows only a few projects; «Show more» reveals the rest
+    var X_SHOWN = 6;
+    var xExpanded = false;
+    var moreLi = document.createElement('li');
+    moreLi.className = 'x-more';
+    moreLi.innerHTML = '<span class="project-name">Show more</span>';
+    moreLi.addEventListener('click', function () {
+      xExpanded = !xExpanded;
+      xApplyTitles();
+    });
+    list.appendChild(moreLi);
+    function xApplyTitles() {
+      moreLi.querySelector('.project-name').textContent = xExpanded ? 'Show less' : 'Show more';
+      var current = xSlides[xIndex].proj;
+      list.querySelectorAll('li').forEach(function (li, j) {
+        if (li === moreLi) return;
+        // the current project stays visible even when the bar is folded
+        li.classList.toggle('x-hidden', !xExpanded && j >= X_SHOWN && j !== current);
+      });
+    }
+
     function xRender() {
-      var ph = ALL[xIndex];
-      var img = document.createElement('img');
-      img.className = 'ph photo';
-      img.alt = '';
-      img.decoding = 'async';
-      img.width = ph.ratio[0];
-      img.height = ph.ratio[1];
-      img.style.aspectRatio = ph.ratio[0] + ' / ' + ph.ratio[1];
-      img.src = ph.src;
+      var sl = xSlides[xIndex], p = PROJECTS[sl.proj];
       mainWrap.innerHTML = '';
-      mainWrap.appendChild(img);
-      caption.textContent = ph.caption;
-      // the neighbours load quietly while this one is on screen
+      mainWrap.classList.toggle('pair', sl.idxs.length === 2);
+      sl.idxs.forEach(function (k) { mainWrap.appendChild(photoImg(p, k, true)); });
+      var nums = sl.idxs.map(function (k) { return k + 1; }).join('–');
+      caption.textContent = p.name + ' — ' + nums + ' / ' + p.photos.length;
+      list.querySelectorAll('li').forEach(function (li, j) {
+        li.classList.toggle('active', j === sl.proj);
+      });
+      xApplyTitles();
+      // the neighbours load quietly while this slide is on screen
       [1, -1].forEach(function (d) {
-        (new Image()).src = ALL[(xIndex + d + ALL.length) % ALL.length].src;
+        var n = xSlides[(xIndex + d + xSlides.length) % xSlides.length];
+        n.idxs.forEach(function (k) { (new Image()).src = srcOf(PROJECTS[n.proj], k); });
       });
     }
     function xGo(d) {
-      xIndex = (xIndex + d + ALL.length) % ALL.length;
+      xIndex = (xIndex + d + xSlides.length) % xSlides.length;
+      xRender();
+    }
+    function xJumpProject(i) {
+      xIndex = xProjSlide[i];
+      xExpanded = false;
+      xSetGrid(false);
       xRender();
     }
     function xSetGrid(on) {
       workMain.classList.toggle('x-grid', on);
-      sheetBtn.textContent = on ? 'Volver' : 'Miniaturas';
+      sheetBtn.textContent = on ? 'Close' : 'Thumbnails';
     }
     function buildX() {
       thumbs.innerHTML = '';
@@ -257,11 +297,7 @@
         cell.className = 'cell fit-wrap';
         cell.dataset.caption = p.name;
         cell.appendChild(photoImg(p, 0, false));
-        cell.addEventListener('click', function () {
-          xIndex = xStart[i];
-          xSetGrid(false);
-          xRender();
-        });
+        cell.addEventListener('click', function () { xJumpProject(i); });
         thumbs.appendChild(cell);
       });
       xSetGrid(false);

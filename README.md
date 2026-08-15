@@ -56,17 +56,19 @@ Cada página tiene un widget flotante (abajo a la derecha) con las opciones
 - **D · Muro** (ref. VSCO / are.na) — sin división por proyectos: las 163 fotos
   en una cuadrícula justificada, cada fila ajustada al ancho exacto de la página.
 - **X · Serie** (ref. emmanuelsmonsalve.com) — la versión del feedback de Andrés,
-  y la que se abre por defecto. La intro de A con el nombre arriba; en work una
-  sola fotografía por vez — el archivo entero como una serie que se desplaza con
-  las dos mitades de la pantalla (el cursor es una flecha blanca), la rueda,
-  ← / → o un gesto en el teléfono. Sin lista lateral y sin lightbox: el nombre
-  del proyecto va muy sutil bajo la fotografía, y «Miniaturas» abre una portada
-  por proyecto. Una sola tipografía (la serif de la marca).
+  y la que se abre por defecto. La intro de A con el nombre arriba; en work el
+  archivo entero como una serie que se desplaza con las dos mitades de la
+  pantalla (el cursor es una flecha blanca), la rueda, ← / → o un gesto en el
+  teléfono. Dos fotos verticales seguidas del mismo proyecto cuelgan juntas como
+  díptico. Arriba, unos pocos títulos de proyecto (mono, como la barra de C) con
+  «Show more» para el resto; el nombre del proyecto va muy sutil bajo la
+  fotografía y «Thumbnails» abre una portada por proyecto. Sin lightbox. Los
+  textos van en la mono; los títulos, en la serif de la marca.
 
 En A–D cada versión tiene su propio **lightbox** (clic en cualquier foto): A, B
 y D sobre fondo blanco, C como cuarto oscuro. El lightbox recorre las fotos del
 mismo proyecto — clic en cada mitad (cursor de flecha), rueda, ← / → — y el
-botón «Miniaturas» muestra la hoja de contactos del proyecto. En X no hay
+botón «Thumbnails» muestra la hoja de contactos del proyecto. En X no hay
 lightbox: la propia página de work es el visor.
 
 Todo tiene una pasada **móvil** (≤ 700 px): X se vuelve un visor a lo ancho con
