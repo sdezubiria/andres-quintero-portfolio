@@ -581,11 +581,11 @@ body[data-v="x"] .x-nav {
 }
 body[data-v="x"] .x-prev {
   left: 0;
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M28%2016H4M12%208l-8%208%208%208' fill='none' stroke='%23202020' stroke-width='3.5' opacity='.35'/%3E%3Cpath d='M28%2016H4M12%208l-8%208%208%208' fill='none' stroke='%23ffffff' stroke-width='1.5'/%3E%3C/svg%3E") 16 16, w-resize;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M28%2016H4M12%208l-8%208%208%208' transform='translate(1%201)' fill='none' stroke='%23000000' stroke-opacity='.4' stroke-width='1.5'/%3E%3Cpath d='M28%2016H4M12%208l-8%208%208%208' fill='none' stroke='%23ffffff' stroke-width='1.5'/%3E%3C/svg%3E") 16 16, w-resize;
 }
 body[data-v="x"] .x-next {
   right: 0;
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M4%2016h24M20%208l8%208-8%208' fill='none' stroke='%23202020' stroke-width='3.5' opacity='.35'/%3E%3Cpath d='M4%2016h24M20%208l8%208-8%208' fill='none' stroke='%23ffffff' stroke-width='1.5'/%3E%3C/svg%3E") 16 16, e-resize;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M4%2016h24M20%208l8%208-8%208' transform='translate(1%201)' fill='none' stroke='%23000000' stroke-opacity='.4' stroke-width='1.5'/%3E%3Cpath d='M4%2016h24M20%208l8%208-8%208' fill='none' stroke='%23ffffff' stroke-width='1.5'/%3E%3C/svg%3E") 16 16, e-resize;
 }
 /* «Miniaturas» — quiet, in the lower left corner */
 .x-sheet-btn { display: none; }
@@ -789,7 +789,13 @@ body[data-v="x"] .about .portrait { cursor: default; }
 .lightbox.lb-grid-mode .lb-thumbs { display: flex; }
 .lightbox figure { display: contents; }
 .lightbox .lb-box { max-width: 88vw; max-height: 80vh; }
-.lightbox img.lb-box { width: auto; height: auto; cursor: zoom-in; }
+.lightbox img.lb-box {
+  width: auto;
+  height: auto;
+  cursor: zoom-in;
+  position: relative;   /* above the halves: inside the print you zoom… */
+  z-index: 206;         /* …outside it you navigate */
+}
 .lightbox figcaption { font-family: var(--mono); }
 /* zoomed: the file at full size, panned by scrolling */
 .lightbox.lb-zoomed {
@@ -804,6 +810,7 @@ body[data-v="x"] .about .portrait { cursor: default; }
   cursor: zoom-out;
 }
 .lightbox.lb-zoomed figcaption { display: none; }
+.lightbox.lb-zoomed .lb-nav { display: none; }   /* panning, not navigating */
 
 /* A: plain white, mono caption */
 body[data-v="a"] .lightbox figcaption {

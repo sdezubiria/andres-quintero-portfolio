@@ -164,6 +164,7 @@
 
   function go(d) {
     if (!lbPhotos || lbPhotos.length < 2) return;
+    if (lbZoomed) setZoom(false);   /* step back to fit before moving on */
     lbIndex = (lbIndex + d + lbPhotos.length) % lbPhotos.length;
     renderPhoto();
   }

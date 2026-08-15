@@ -266,13 +266,10 @@
       mainWrap.classList.toggle('pair', sl.idxs.length === 2);
       sl.idxs.forEach(function (k) {
         var img = photoImg(p, k, true);
-        // inside the print: a zoomable lightbox; outside it, the halves navigate
+        // inside the print: a zoomable lightbox that can still walk the
+        // whole project; outside it, the halves navigate
         img.addEventListener('click', function () {
-          AQ.openLightbox({
-            ratio: p.photos[k][0] / p.photos[k][1],
-            caption: p.name + ' — ' + (k + 1) + ' / ' + p.photos.length,
-            src: srcOf(p, k)
-          });
+          AQ.openLightbox({ photos: galleryOf(p), index: k });
         });
         mainWrap.appendChild(img);
       });
