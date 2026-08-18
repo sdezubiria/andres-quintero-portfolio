@@ -220,11 +220,11 @@ li.x-more .project-name:hover { color: var(--ink); }
   width: 100%;
   gap: 20px;                        /* air between the two prints of a diptych */
 }
-/* every photograph enters with a soft fade, after a half-second of quiet
-   (backwards keeps it invisible while it waits) */
+/* every photograph enters with a soft fade */
 @keyframes photo-in { from { opacity: 0; } }
+.gallery .main-wrap { position: relative; }
 .gallery .main-wrap > .photo {
-  animation: photo-in 0.45s ease 0.5s backwards;
+  animation: photo-in 0.45s ease;
   max-height: calc(100vh - 220px);   /* nav + titles + air below */
   max-height: calc(100dvh - 220px);
   /* above the halves: inside the print you zoom, outside it you navigate */
@@ -234,6 +234,30 @@ li.x-more .project-name:hover { color: var(--ink); }
 }
 /* two verticals of the same project hang side by side (ref. E. Monsalve) */
 .gallery .main-wrap.pair > .photo { max-width: calc(50% - 10px); }
+
+/* hover previews on the titles: the photograph that was on screen holds
+   (the .ghost layer) while the hovered one waits half a second and then
+   fades in over it — only here, never in the series itself or the lightbox */
+.gallery .main-wrap > .photo.soft { animation: photo-in 0.45s ease 0.5s backwards; }
+.gallery .main-wrap .ghost {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  z-index: 44;              /* under the live photograph while it fades in */
+  pointer-events: none;
+}
+.gallery .main-wrap .ghost > .photo {
+  display: block;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  max-height: calc(100vh - 220px);
+  max-height: calc(100dvh - 220px);
+}
+.gallery .main-wrap .ghost.pair > .photo { max-width: calc(50% - 10px); }
 
 /* the two halves of the room: left goes back, right goes forward; the
    cursor itself is the arrow — the same dark one as the lightbox */
@@ -418,7 +442,7 @@ main.work.x-grid { overflow-y: auto; }
 .lightbox img.lb-box {
   width: auto;
   height: auto;
-  animation: photo-in 0.45s ease 0.5s backwards;
+  animation: photo-in 0.45s ease;
   cursor: zoom-in;
   position: relative;   /* above the halves: inside the print you zoom… */
   z-index: 206;         /* …outside it you navigate */

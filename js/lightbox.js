@@ -20,7 +20,7 @@
     '</figure>' +
     '<div class="lb-thumbs"></div>';
 
-  var lbPhotos = null, lbIndex = 0, lbZoomed = false;
+  var lbPhotos = null, lbIndex = 0, lbZoomed = false, lbBoundary = null;
 
   function fit(ratio) {
     var maxW = innerWidth * 0.88;
@@ -110,7 +110,10 @@
   function openLightbox(opts) {
     lbPhotos = opts.photos || [{ ratio: opts.ratio, caption: opts.caption, src: opts.src }];
     lbIndex = Math.min(opts.index || 0, lbPhotos.length - 1);
-    var multi = lbPhotos.length > 1;
+    lbBoundary = opts.onBoundary || null;
+    // with a boundary handler there is always somewhere to go, even from a
+    // one-photo project
+    var multi = lbPhotos.length > 1 || !!lbBoundary;
     lb.querySelector('.lb-prev').hidden = !multi;
     lb.querySelector('.lb-next').hidden = !multi;
     lb.querySelector('.lb-grid-btn').hidden = !multi;
@@ -126,6 +129,7 @@
   function closeLightbox() {
     lb.hidden = true;
     lbPhotos = null;
+    lbBoundary = null;
     setGrid(false);
     lbZoomed = false;
     lb.classList.remove('lb-zoomed');
@@ -133,9 +137,19 @@
   }
 
   function go(d) {
-    if (!lbPhotos || lbPhotos.length < 2) return;
+    if (!lbPhotos || (lbPhotos.length < 2 && !lbBoundary)) return;
     if (lbZoomed) setZoom(false);   /* step back to fit before moving on */
-    lbIndex = (lbIndex + d + lbPhotos.length) % lbPhotos.length;
+    var ni = lbIndex + d;
+    if (lbBoundary && (ni < 0 || ni >= lbPhotos.length)) {
+      // past the edge of the project: slide into the neighbour project
+      var res = lbBoundary(d);
+      lbPhotos = res.photos;
+      lbIndex = res.index;
+      if (res.onBoundary) lbBoundary = res.onBoundary;
+      buildThumbs();
+    } else {
+      lbIndex = (ni + lbPhotos.length) % lbPhotos.length;
+    }
     renderPhoto();
   }
 

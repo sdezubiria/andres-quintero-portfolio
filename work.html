@@ -87,8 +87,8 @@
       li.addEventListener('click', function () { xJumpProject(i); });
       // hovering a title shows that project's opening image in the viewer;
       // leaving restores the slide the visitor was on
-      li.addEventListener('mouseenter', function () { renderSlide(xSlides[xProjSlide[i]]); });
-      li.addEventListener('mouseleave', function () { renderSlide(xSlides[xIndex]); });
+      li.addEventListener('mouseenter', function () { renderSlide(xSlides[xProjSlide[i]], true); });
+      li.addEventListener('mouseleave', function () { renderSlide(xSlides[xIndex], true); });
       list.appendChild(li);
     });
 
@@ -133,18 +133,45 @@
       });
     }
 
+    // crossing a project's edge in the lightbox slides into the neighbour
+    // project — the handler renews itself with the project it lands on
+    function lbBoundaryFor(pi) {
+      return function (d) {
+        var np = (pi + (d > 0 ? 1 : -1) + PROJECTS.length) % PROJECTS.length;
+        return {
+          photos: galleryOf(PROJECTS[np]),
+          index: d > 0 ? 0 : PROJECTS[np].photos.length - 1,
+          onBoundary: lbBoundaryFor(np)
+        };
+      };
+    }
+
     // puts one slide in the viewer — used by the series itself and by the
-    // hover previews on the project titles
-    function renderSlide(sl) {
+    // hover previews on the project titles. `soft` (hover only) holds the
+    // photograph that was on screen and fades the new one in over it.
+    var ghostTimer;
+    function renderSlide(sl, soft) {
       var p = PROJECTS[sl.proj];
-      mainWrap.innerHTML = '';
+      clearTimeout(ghostTimer);
+      var oldGhost = mainWrap.querySelector('.ghost');
+      if (oldGhost) oldGhost.remove();
+      if (soft && mainWrap.children.length) {
+        var ghost = document.createElement('div');
+        ghost.className = 'ghost' + (mainWrap.classList.contains('pair') ? ' pair' : '');
+        while (mainWrap.firstChild) ghost.appendChild(mainWrap.firstChild);
+        mainWrap.appendChild(ghost);
+        ghostTimer = setTimeout(function () { ghost.remove(); }, 1000);
+      } else {
+        mainWrap.innerHTML = '';
+      }
       mainWrap.classList.toggle('pair', sl.idxs.length === 2);
       sl.idxs.forEach(function (k) {
         var img = photoImg(p, k, true);
+        if (soft) img.classList.add('soft');
         // inside the print: a zoomable lightbox that can still walk the
-        // whole project; outside it, the halves navigate
+        // whole archive; outside it, the halves navigate
         img.addEventListener('click', function () {
-          AQ.openLightbox({ photos: galleryOf(p), index: k });
+          AQ.openLightbox({ photos: galleryOf(p), index: k, onBoundary: lbBoundaryFor(sl.proj) });
         });
         mainWrap.appendChild(img);
       });
