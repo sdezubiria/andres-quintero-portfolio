@@ -165,6 +165,8 @@
         mainWrap.innerHTML = '';
       }
       mainWrap.classList.toggle('pair', sl.idxs.length === 2);
+      // what the cursor tip reads over the photograph, e.g. "3/8" or "3–4/8"
+      mainWrap.dataset.nums = sl.idxs.map(function (k) { return k + 1; }).join('–') + '/' + p.photos.length;
       sl.idxs.forEach(function (k) {
         var img = photoImg(p, k, true);
         if (soft) img.classList.add('soft');
@@ -215,6 +217,22 @@
       cell.addEventListener('click', function () { xJumpProject(i); });
       thumbs.appendChild(cell);
     });
+
+    // the photo number rides beside the cursor while it is on the photograph
+    var tip = document.createElement('div');
+    tip.className = 'cursor-tip';
+    document.body.appendChild(tip);
+    mainWrap.addEventListener('mousemove', function (e) {
+      if (e.target.classList && e.target.classList.contains('photo')) {
+        tip.textContent = mainWrap.dataset.nums || '';
+        tip.style.left = (e.clientX + 16) + 'px';
+        tip.style.top = (e.clientY + 12) + 'px';
+        tip.style.display = 'block';
+      } else {
+        tip.style.display = 'none';
+      }
+    });
+    mainWrap.addEventListener('mouseleave', function () { tip.style.display = 'none'; });
 
     document.querySelector('.x-prev').addEventListener('click', function () { xGo(-1); });
     document.querySelector('.x-next').addEventListener('click', function () { xGo(1); });

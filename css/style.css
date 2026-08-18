@@ -236,9 +236,11 @@ li.x-more .project-name:hover { color: var(--ink); }
 .gallery .main-wrap.pair > .photo { max-width: calc(50% - 10px); }
 
 /* hover previews on the titles: the photograph that was on screen holds
-   (the .ghost layer) while the hovered one waits half a second and then
-   fades in over it — only here, never in the series itself or the lightbox */
+   (the .ghost layer) for half a second and vanishes at the exact moment the
+   hovered one starts to fade in — two projects are never on screen at once.
+   Only here, never in the series itself or the lightbox. */
 .gallery .main-wrap > .photo.soft { animation: photo-in 0.45s ease 0.5s backwards; }
+@keyframes ghost-out { to { opacity: 0; visibility: hidden; } }
 .gallery .main-wrap .ghost {
   position: absolute;
   inset: 0;
@@ -246,8 +248,9 @@ li.x-more .project-name:hover { color: var(--ink); }
   align-items: center;
   justify-content: center;
   gap: 20px;
-  z-index: 44;              /* under the live photograph while it fades in */
+  z-index: 44;              /* under the live photograph */
   pointer-events: none;
+  animation: ghost-out 0.01s linear 0.5s forwards;   /* holds, then goes at once */
 }
 .gallery .main-wrap .ghost > .photo {
   display: block;
@@ -275,6 +278,19 @@ li.x-more .project-name:hover { color: var(--ink); }
 .x-next {
   right: 0;
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M6%2020h28M24%2010l10%2010-10%2010' fill='none' stroke='%23202020' stroke-width='2'/%3E%3C/svg%3E") 20 20, e-resize;
+}
+
+/* the photo number travels with the cursor over the photograph */
+.cursor-tip {
+  position: fixed;
+  z-index: 60;
+  display: none;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 /* «Thumbnails» — quiet, in the lower left corner */
