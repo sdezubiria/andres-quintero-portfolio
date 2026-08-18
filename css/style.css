@@ -55,6 +55,13 @@ body.lb-open { overflow: hidden; }
 a { color: inherit; text-decoration: none; }
 a:hover { color: var(--accent); }
 
+/* photographs are looked at, not selected or dragged (no blue veil) */
+img {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
+
 .serif {
   font-family: var(--serif);
   letter-spacing: 0;        /* brandbook: titles tracking 0 */
@@ -126,7 +133,10 @@ main.work, main.about { flex: 1; }
    Full-bleed photograph, the name centred on top, the menu at the bottom. */
 .landing {
   position: fixed;
-  inset: 0;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;   /* mobile Safari: never taller than what is actually visible */
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -147,14 +157,14 @@ main.work, main.about { flex: 1; }
   font-family: var(--serif);
   font-size: 32px;
   left: 50%; transform: translateX(-50%);
-  top: 44px;
+  top: 24%;          /* both texts lean towards the centre of the photograph */
   white-space: nowrap;
 }
 .landing .menu {
   font-family: var(--serif);
   font-size: 28px;
   left: 50%; transform: translateX(-50%);
-  bottom: 64px;
+  bottom: 24%;
   text-shadow: 0 0 1px rgba(0,0,0,0.25);
 }
 .landing .overlay a { transition: opacity 0.25s; }
@@ -217,7 +227,9 @@ li.x-more .project-name:hover { color: var(--ink); }
 .gallery .main-wrap {
   flex: none;
   min-height: 0;
-  width: 100%;
+  /* gutters at both sides so the navigation halves always stay reachable,
+     even when a diptych would otherwise span the full width */
+  width: calc(100% - 160px);
   gap: 20px;                        /* air between the two prints of a diptych */
 }
 /* every photograph enters with a soft fade */
@@ -252,6 +264,9 @@ li.x-more .project-name:hover { color: var(--ink); }
   right: 0;
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M6%2020h28M24%2010l10%2010-10%2010' fill='none' stroke='%23202020' stroke-width='2'/%3E%3C/svg%3E") 20 20, e-resize;
 }
+
+/* on a touch screen, a quiet reminder that the series moves sideways */
+.x-swipe-hint { display: none; }
 
 /* the photo number travels with the cursor over the photograph */
 .cursor-tip {
@@ -460,8 +475,8 @@ main.work.x-grid { overflow-y: auto; }
   .nav .links { gap: 16px; }
 
   /* — landing — */
-  .landing .name { font-size: 30px; top: 20px; }
-  .landing .menu { font-size: 20px; bottom: 36px; }
+  .landing .name { font-size: 30px; }
+  .landing .menu { font-size: 20px; }
 
   /* — viewer — tap either half or swipe; the photo fills the width — */
   .work {
@@ -474,10 +489,25 @@ main.work.x-grid { overflow-y: auto; }
     max-height: calc(100dvh - 200px);
   }
   .gallery { padding-bottom: 30px; }
-  .gallery .main-wrap { gap: 10px; }
+  .gallery .main-wrap { gap: 10px; width: calc(100% - 48px); }
   .gallery .main-wrap.pair > .photo { max-width: calc(50% - 5px); }
   .projects ul { gap: 6px 16px; }
-  .x-sheet-btn { left: 16px; bottom: 12px; }
+  .x-sheet-btn { left: 16px; bottom: calc(12px + env(safe-area-inset-bottom)); }
+
+  /* the reminder that the series moves sideways; it bows out after the
+     first swipe (the script fades it) */
+  .x-swipe-hint {
+    display: block;
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #a3a3a3;
+    text-align: center;
+    transition: opacity 0.4s;
+  }
+  .x-grid .x-swipe-hint { display: none; }
   .x-grid .gallery .thumbs { grid-template-columns: repeat(2, 1fr); gap: 28px 12px; }
   .x-grid .thumbs .cell > .photo { max-height: none; }
 
