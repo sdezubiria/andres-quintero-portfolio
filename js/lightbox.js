@@ -1,45 +1,10 @@
-// Version widget + shared lightbox.
-// The version choice persists across pages (localStorage) and is shareable via ?v=.
+// Shared lightbox.
+// Shows one photograph at the largest size that fits the viewport WITHOUT
+// changing its aspect ratio. When it receives the whole project
+// (openLightbox({photos: […], index})) it becomes navigable, like
+// emmanuelsmonsalve.com: click on either half (arrow cursor), scroll,
+// ← / →, and a thumbnail sheet behind the «Thumbnails» button.
 (function () {
-  var VERSIONS = ['a', 'b', 'c', 'd', 'x'];
-  var param = new URLSearchParams(location.search).get('v');
-  var current = VERSIONS.includes(param) ? param : (localStorage.getItem('aq-version') || 'x');
-
-  function apply(v) {
-    current = v;
-    document.body.dataset.v = v;
-    localStorage.setItem('aq-version', v);
-    document.querySelectorAll('.vwidget button').forEach(function (b) {
-      b.classList.toggle('active', b.dataset.v === v);
-    });
-    var url = new URL(location.href);
-    url.searchParams.set('v', v);
-    history.replaceState(null, '', url);
-    document.dispatchEvent(new CustomEvent('aq:version', { detail: v }));
-    document.querySelectorAll('a[href$=".html"], a[href*=".html?"]').forEach(function (a) {
-      var href = new URL(a.getAttribute('href'), location.href);
-      href.searchParams.set('v', v);
-      a.href = href.pathname.split('/').pop() + href.search;
-    });
-  }
-
-  var widget = document.createElement('div');
-  widget.className = 'vwidget';
-  widget.innerHTML =
-    '<span class="label">Version</span>' +
-    VERSIONS.map(function (v) {
-      return '<button data-v="' + v + '">' + v.toUpperCase() + '</button>';
-    }).join('');
-  widget.addEventListener('click', function (e) {
-    if (e.target.dataset.v) apply(e.target.dataset.v);
-  });
-
-  // ————— Lightbox —————
-  // Shows one photograph at the largest size that fits the viewport WITHOUT
-  // changing its aspect ratio. When it receives the whole project
-  // (openLightbox({photos: […], index})) it becomes navigable, like
-  // emmanuelsmonsalve.com: click on either half (arrow cursor), scroll,
-  // ← / →, and a thumbnail sheet behind the «Thumbnails» button.
   var lb = document.createElement('div');
   lb.className = 'lightbox';
   lb.hidden = true;
@@ -58,9 +23,8 @@
   var lbPhotos = null, lbIndex = 0, lbZoomed = false;
 
   function fit(ratio) {
-    var v = document.body.dataset.v;
-    var maxW = innerWidth * (v === 'b' ? 0.70 : v === 'd' ? 0.92 : 0.88);
-    var maxH = innerHeight * (v === 'b' ? 0.72 : v === 'd' ? 0.86 : 0.80);
+    var maxW = innerWidth * 0.88;
+    var maxH = innerHeight * 0.80;
     var w = maxW, h = w / ratio;
     if (h > maxH) { h = maxH; w = h * ratio; }
     return { w: Math.round(w), h: Math.round(h) };
@@ -213,33 +177,9 @@
   window.addEventListener('resize', function () {
     if (!lb.hidden && lbPhotos && !lbZoomed) renderPhoto();
   });
-  window.AQ = { openLightbox: openLightbox, version: function () { return current; } };
+  window.AQ = { openLightbox: openLightbox };
 
   document.addEventListener('DOMContentLoaded', function () {
-    document.body.appendChild(widget);
     document.body.appendChild(lb);
-    apply(current);
-
-    // Anything marked data-lb opens the lightbox
-    document.querySelectorAll('[data-lb]').forEach(function (el) {
-      el.addEventListener('click', function () {
-        // X has no lightbox at all; in A the landing photo is background
-        if (current === 'x') return;
-        if (current === 'a' && el.classList.contains('hero')) return;
-        var ratio;
-        if (el.tagName === 'IMG' && el.naturalWidth) {
-          ratio = el.naturalWidth / el.naturalHeight;
-        } else {
-          var r = (getComputedStyle(el).aspectRatio || '').split('/');
-          ratio = r.length === 2 ? parseFloat(r[0]) / parseFloat(r[1])
-                                 : el.offsetWidth / el.offsetHeight;
-        }
-        openLightbox({
-          ratio: ratio,
-          caption: el.dataset.lb,
-          src: el.tagName === 'IMG' ? el.src : null
-        });
-      });
-    });
   });
 })();

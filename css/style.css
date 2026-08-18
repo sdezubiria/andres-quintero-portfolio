@@ -1,20 +1,10 @@
 /* ————— Andrés Quintero — prototype styles —————
-   Three layout versions, switched by the floating widget:
-   A — Retícula   (the Figma: full-bleed landing, 7-column work page)
-   B — Editorial  (ref. sebastianfaena.com: white page, serif name top-right, big spread)
-   C — Archivo    (ref. quentindebrieystudio.com: big name top-left, thumbnail grid)
-   D — Muro       (ref. VSCO / are.na: one justified wall of every photograph)
-   X — Serie      (ref. emmanuelsmonsalve.com: A's intro with the name on top;
-                   work is one photograph at a time — two verticals pair up as
-                   a diptych — displaced with arrow cursors, scroll, keys
-                   or swipe. A few project titles on top (Show
-                   more expands them), the current name very subtle under the
-                   photograph, «Thumbnails» opens one cover per project;
-                   clicking inside the print opens a zoomable lightbox.
-                   Texts in the mono, titles in the serif.)
-   Every version (except X) shows every photograph of the project: the page scrolls when
-   they don't all fit at once, and each photo is capped in vh so a screenful
-   always holds several of them.
+   One design (ref. emmanuelsmonsalve.com): full-bleed intro with the name on
+   top; work is one photograph at a time — two verticals pair up as a diptych —
+   displaced with arrow cursors, scroll, keys or swipe. A few project titles on
+   top (Show more expands them); «Thumbnails» opens one cover per project.
+   Clicking inside the print opens a zoomable lightbox with its own
+   thumbnail sheet. Texts in the mono, titles in the serif.
    Photographs never change aspect ratio: they scale by their own intrinsic
    size with max-width/max-height (letterboxed, never cropped). */
 
@@ -104,10 +94,8 @@ a:hover { color: var(--accent); }
 }
 /* Both real photographs and placeholders are <img>s with the photograph's
    intrinsic size, so the browser scales them by their own proportions.
-   The height cap is set per version in vh — the page scrolls, so a percentage
-   of an auto-height container would mean nothing. */
-/* width and height must both stay `auto` — with a fixed width, the per-version
-   max-height would squash the picture instead of scaling it down. The inline
+   width and height must both stay `auto` — with a fixed width, a max-height
+   would squash the picture instead of scaling it down. The inline
    aspect-ratio set in JS keeps the box the right shape while the file loads. */
 .fit-wrap > .ph {
   display: block;
@@ -116,7 +104,7 @@ a:hover { color: var(--accent); }
   height: auto;
 }
 
-/* ————— Inner-page nav — sticky, so it stays reachable while scrolling ————— */
+/* ————— Inner-page nav ————— */
 .nav {
   position: sticky;
   top: 0;
@@ -134,7 +122,8 @@ a:hover { color: var(--accent); }
 
 main.work, main.about { flex: 1; }
 
-/* ════════════ LANDING ════════════ */
+/* ════════════ LANDING ════════════
+   Full-bleed photograph, the name centred on top, the menu at the bottom. */
 .landing {
   position: fixed;
   inset: 0;
@@ -143,365 +132,45 @@ main.work, main.about { flex: 1; }
   align-items: center;
   justify-content: center;
 }
-.landing img.hero { display: block; cursor: zoom-in; }
+.landing img.hero {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* full-bleed crop, ratio intact */
+  display: block;
+}
 .landing .overlay { position: absolute; inset: 0; color: #fff; pointer-events: none; }
 .landing .overlay a { color: inherit; pointer-events: auto; }
-.landing .name, .landing .menu { position: absolute; text-shadow: 0 0 1px rgba(0,0,0,0.25); }
-
-/* — A: the Figma — photo full-bleed, name centered at the bottom — */
-body[data-v="a"] .landing img.hero {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;   /* full-bleed crop, ratio intact */
-  cursor: default;
-}
-body[data-v="a"] .landing .menu {
-  font-family: var(--serif);
-  font-size: 28px;
-  left: 50%; transform: translateX(-50%);
-  bottom: 40%;
-}
-body[data-v="a"] .landing .name {
-  font-family: var(--serif);
-  font-size: 48px;
-  left: 50%; transform: translateX(-50%);
-  bottom: 64px;
-  white-space: nowrap;
-}
-body[data-v="a"] .landing .overlay a { transition: opacity 0.25s; }
-body[data-v="a"] .landing .overlay a:hover { opacity: 0.6; color: #fff; }
-
-/* — B: editorial — white page, serif name top-right, photo centered — */
-body[data-v="b"] .landing {
-  background: var(--paper);
-  padding: 120px 64px 64px;
-}
-body[data-v="b"] .landing img.hero {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-}
-body[data-v="b"] .landing .overlay { color: var(--ink); }
-body[data-v="b"] .landing .name, body[data-v="b"] .landing .menu { text-shadow: none; }
-body[data-v="b"] .landing .name {
-  font-family: var(--serif);
-  font-size: 26px;
-  top: var(--margin); right: var(--margin);
-}
-body[data-v="b"] .landing .menu {
-  font-family: var(--mono);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  top: 76px; right: var(--margin);
-  text-align: right;
-}
-body[data-v="b"] .landing .overlay a { transition: letter-spacing 0.3s; }
-body[data-v="b"] .landing .name a:hover { color: var(--ink); font-style: italic; }
-body[data-v="b"] .landing .menu a:hover { letter-spacing: 0.22em; color: var(--ink); }
-
-/* — C: archive — big serif name top-left, mono links under, photo centered — */
-body[data-v="c"] .landing {
-  background: var(--paper);
-  padding: 150px 64px 64px;
-}
-body[data-v="c"] .landing img.hero {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-}
-body[data-v="c"] .landing .overlay { color: var(--ink); }
-body[data-v="c"] .landing .name, body[data-v="c"] .landing .menu { text-shadow: none; }
-body[data-v="c"] .landing .name {
-  font-family: var(--serif);
-  font-size: clamp(36px, 5vw, 64px);
-  top: var(--margin); left: var(--margin);
-}
-body[data-v="c"] .landing .menu {
-  font-family: var(--mono);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  top: 110px; left: var(--margin);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-body[data-v="c"] .landing .menu .sep { display: none; }
-body[data-v="c"] .landing .menu a:hover { text-decoration: underline; text-underline-offset: 3px; }
-
-/* — D: muro — white page, name and menu centered under the photo — */
-body[data-v="d"] .landing {
-  background: var(--paper);
-  padding: 64px 64px 150px;
-}
-body[data-v="d"] .landing img.hero {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-}
-body[data-v="d"] .landing .overlay { color: var(--ink); }
-body[data-v="d"] .landing .name, body[data-v="d"] .landing .menu { text-shadow: none; }
-body[data-v="d"] .landing .name {
-  font-family: var(--serif);
-  font-size: 26px;
-  left: 50%; transform: translateX(-50%);
-  bottom: 92px;
-  white-space: nowrap;
-}
-body[data-v="d"] .landing .menu {
-  font-family: var(--mono);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  left: 50%; transform: translateX(-50%);
-  bottom: 56px;
-  white-space: nowrap;
-}
-body[data-v="d"] .landing .menu a:hover { color: var(--accent); }
-body[data-v="d"] .landing .name a:hover { color: var(--accent); }
-
-/* — X: serie — A's full-bleed intro with the name moved to the top — */
-body[data-v="x"] .landing img.hero {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;   /* full-bleed crop, ratio intact */
-  cursor: default;
-}
-body[data-v="x"] .landing .name {
+.landing .name, .landing .menu { position: absolute; }
+.landing .name {
   font-family: var(--serif);
   font-size: 32px;
   left: 50%; transform: translateX(-50%);
   top: 44px;
   white-space: nowrap;
-  text-shadow: none;
 }
-body[data-v="x"] .landing .menu {
+.landing .menu {
   font-family: var(--serif);
   font-size: 28px;
   left: 50%; transform: translateX(-50%);
   bottom: 64px;
+  text-shadow: 0 0 1px rgba(0,0,0,0.25);
 }
-body[data-v="x"] .landing .overlay a { transition: opacity 0.25s; }
-body[data-v="x"] .landing .overlay a:hover { opacity: 0.6; color: #fff; }
+.landing .overlay a { transition: opacity 0.25s; }
+.landing .overlay a:hover { opacity: 0.6; color: #fff; }
 
-/* ════════════ WORK ════════════ */
+/* ════════════ WORK ════════════
+   One photograph at a time; the whole archive is one series. The page IS the
+   viewer: the two halves of the room displace the series (the cursor is the
+   arrow), so do the wheel, ← / → and a swipe. The project name lives only in
+   the titles bar on top. «Thumbnails» opens one cover per project. */
 .work {
   display: grid;
   align-items: start;
   gap: 20px;
   padding: 0 var(--margin) var(--margin);
   position: relative;
-}
-
-/* The project list stays put while the photographs scroll past it. */
-.projects {
-  position: sticky;
-  top: 84px;
-  align-self: start;
-  max-height: calc(100vh - 104px);
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
-.projects ul { list-style: none; }
-.projects .project-name { cursor: pointer; transition: color 0.25s; display: inline-block; }
-.projects .meta { display: none; margin-top: 4px; }
-.projects li.active .meta { display: block; color: var(--accent); }
-
-.gallery { display: flex; min-width: 0; }
-.gallery .thumbs { display: grid; gap: 20px; }
-.gallery .thumbs .cell { cursor: pointer; }
-.gallery .thumbs .cell.active > .ph { border-color: var(--ink); }
-/* on a real photograph the mark sits outside the frame, so nothing is covered */
-.gallery .thumbs .cell.active > .photo { outline: 1px solid var(--ink); outline-offset: 3px; }
-.gallery .main, .gallery .side { cursor: zoom-in; }
-
-/* — A: the 7-column grid — 3 for names, 4 for images, fits the viewport — */
-body[data-v="a"] .work { grid-template-columns: repeat(7, 1fr); }
-body[data-v="a"] .projects {
-  grid-column: 1 / span 3;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-body[data-v="a"] .projects ul { margin: auto 0; }   /* centred while it fits */
-body[data-v="a"] .projects li { margin-bottom: 6px; }
-body[data-v="a"] .projects .project-name {
-  font-family: var(--serif);
-  font-size: clamp(15px, 2.1vh, 24px);
-  color: #b5b5b5;
-}
-body[data-v="a"] .projects li.active .project-name,
-body[data-v="a"] .projects .project-name:hover { color: var(--ink); }
-body[data-v="a"] .gallery {
-  grid-column: 4 / span 4;
-  flex-direction: column;
-  gap: 10px;
-}
-body[data-v="a"] .gallery .main-wrap { flex: none; }
-body[data-v="a"] .gallery .main-wrap > .photo { max-height: 74vh; }
-body[data-v="a"] .gallery .side-wrap { display: none; }
-/* Contact sheet under the big view: every photograph of the project, four
-   across, ragged rows because none of them is cropped to fit a cell. */
-body[data-v="a"] .gallery .thumbs {
-  flex: none;
-  grid-template-columns: repeat(4, 1fr);
-  align-items: start;
-  gap: 14px;
-}
-body[data-v="a"] .thumbs .cell > .photo { max-height: 26vh; }
-/* the caption belongs to the big view, so it sits right under it */
-body[data-v="a"] .gallery .main-wrap { order: 1; }
-body[data-v="a"] .gallery .caption { order: 2; flex: none; margin-bottom: 10px; }
-body[data-v="a"] .gallery .thumbs { order: 3; }
-/* A hover: quiet fade */
-body[data-v="a"] .thumbs .ph { transition: opacity 0.25s; }
-body[data-v="a"] .thumbs .cell:hover > .ph { opacity: 0.55; }
-body[data-v="a"] .main-wrap .ph { transition: opacity 0.25s; }
-body[data-v="a"] .main-wrap:hover .ph { opacity: 0.9; }
-
-/* — B: editorial spread — two big images, project names bottom-left — */
-body[data-v="b"] .work { grid-template-columns: 1fr 3fr; }
-body[data-v="b"] .projects {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-body[data-v="b"] .projects li { margin-bottom: 8px; }
-body[data-v="b"] .projects .project-name {
-  font-family: var(--mono);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #b5b5b5;
-  transition: letter-spacing 0.3s, color 0.25s;
-}
-body[data-v="b"] .projects li.active .project-name { color: var(--ink); }
-body[data-v="b"] .projects .project-name:hover { color: var(--ink); letter-spacing: 0.22em; }
-/* The whole project reads as a sequence of spreads: two big prints per row,
-   with air between them, scrolled through like the pages of a magazine. */
-body[data-v="b"] .gallery { flex-direction: column; }
-body[data-v="b"] .gallery .main-wrap,
-body[data-v="b"] .gallery .side-wrap { display: none; }
-body[data-v="b"] .gallery .thumbs {
-  grid-template-columns: repeat(2, 1fr);
-  align-items: end;
-  gap: 12vh 32px;
-}
-body[data-v="b"] .thumbs .cell {
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-body[data-v="b"] .thumbs .cell > .photo { max-height: 76vh; }
-body[data-v="b"] .thumbs .cell::after {
-  content: attr(data-caption);
-  font-family: var(--serif);
-  font-size: 15px;
-  color: #8a8a8a;
-}
-body[data-v="b"] .gallery .caption { display: none; }
-/* B hover: the print recedes slightly */
-body[data-v="b"] .thumbs .photo { transition: transform 0.35s ease; }
-body[data-v="b"] .thumbs .cell:hover > .photo { transform: scale(0.985); }
-
-/* — C: archive grid — project names as a top bar, thumbnails fill the page — */
-body[data-v="c"] .work {
-  grid-template-columns: 1fr;
-  grid-template-rows: auto auto;
-}
-/* the project bar is the navigation here, so it stays under the header */
-body[data-v="c"] .projects {
-  top: 76px;
-  max-height: none;
-  overflow: visible;
-  background: var(--paper);
-  padding: 8px 0 12px;
-  border-bottom: 1px solid var(--line);
-  z-index: 60;
-}
-body[data-v="c"] .projects ul { display: flex; gap: 28px; flex-wrap: wrap; }
-body[data-v="c"] .projects li { margin: 0; }
-body[data-v="c"] .projects .project-name {
-  font-family: var(--mono);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #b5b5b5;
-}
-body[data-v="c"] .projects .project-name:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
-body[data-v="c"] .projects li.active .project-name { color: var(--accent); }
-body[data-v="c"] .projects .meta { display: none !important; }
-body[data-v="c"] .gallery { flex-direction: column; }
-body[data-v="c"] .gallery .main-wrap { display: none; }
-body[data-v="c"] .gallery .side-wrap { display: none; }
-body[data-v="c"] .gallery .thumbs {
-  grid-template-columns: repeat(4, 1fr);
-  align-items: start;
-  gap: 24px 20px;
-}
-body[data-v="c"] .thumbs .cell > .photo { max-height: 34vh; }
-body[data-v="c"] .gallery .caption { flex: none; order: -1; margin-bottom: 12px; }
-/* C hover: cell fills faintly, label appears */
-body[data-v="c"] .thumbs .cell { position: relative; }
-body[data-v="c"] .thumbs .cell:hover > .ph { border-color: var(--ink); background-color: #f4f4f4; }
-body[data-v="c"] .thumbs .cell > .photo { transition: opacity 0.2s; }
-body[data-v="c"] .thumbs .cell:hover > .photo { opacity: 0.72; }
-body[data-v="c"] .thumbs .cell::after {
-  content: attr(data-caption);
-  position: absolute;
-  left: 4px; bottom: -4px;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-body[data-v="c"] .thumbs .cell:hover::after { opacity: 1; }
-
-/* — D: muro — no projects, one justified grid of every photo — */
-body[data-v="d"] .work {
-  grid-template-columns: 1fr;
-  grid-template-rows: auto;
-}
-body[data-v="d"] .projects { display: none; }
-body[data-v="d"] .gallery { flex-direction: column; }
-body[data-v="d"] .gallery .main-wrap, body[data-v="d"] .gallery .side-wrap { display: none; }
-/* One wall of every photograph: rows justified to the full width, scrolled. */
-body[data-v="d"] .gallery .thumbs {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-body[data-v="d"] .thumbs .grid-row {
-  display: flex;
-  gap: 8px;
-  flex: none;
-}
-body[data-v="d"] .gallery .caption { flex: none; order: -1; margin-bottom: 12px; }
-/* D hover: the tile breathes */
-body[data-v="d"] .thumbs img.ph {
-  transition: transform 0.25s ease, background-color 0.25s;
-  cursor: zoom-in;
-}
-body[data-v="d"] .thumbs img.ph:hover {
-  transform: scale(1.025);
-  background-color: #f4f4f4;
-}
-
-/* — X: serie — one photograph at a time; the whole archive is one series.
-   No side list and no lightbox: the page IS the viewer. The two halves of
-   the photograph displace the series (the cursor is a white arrow), so do
-   the wheel, ← / → and a swipe. The project name sits very subtly under
-   the photograph. «Miniaturas» opens one cover per project. — */
-body[data-v="x"] .work {
   grid-template-columns: 1fr;
   grid-template-rows: auto 1fr;
   flex: none;                      /* the page itself never scrolls */
@@ -509,88 +178,79 @@ body[data-v="x"] .work {
   height: calc(100dvh - 86px);
   overflow: hidden;
 }
-/* a few project titles on top (like C's bar), the rest behind «Show more» */
-body[data-v="x"] .projects {
-  position: static;
-  max-height: none;
-  overflow: visible;
-  padding: 2px 0 14px;
-}
-body[data-v="x"] .projects ul { display: flex; flex-wrap: wrap; gap: 8px 24px; }
-body[data-v="x"] .projects li { margin: 0; }
-body[data-v="x"] .projects .project-name {
+
+/* a few project titles on top, the rest behind «Show more» */
+.projects { padding: 2px 0 14px; }
+.projects ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+.projects li { margin: 0; }
+.projects .project-name {
   font-family: var(--mono);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: #b5b5b5;
+  cursor: pointer;
+  transition: color 0.25s;
+  display: inline-block;
 }
-body[data-v="x"] .projects .project-name:hover { color: var(--ink); }
-body[data-v="x"] .projects li.active .project-name { color: var(--ink); }
-body[data-v="x"] .projects .meta { display: none !important; }
-body[data-v="x"] .projects li.x-hidden { display: none; }
-.x-more { display: none; }
-body[data-v="x"] li.x-more { display: block; }
-body[data-v="x"] li.x-more .project-name {
+.projects .project-name:hover { color: var(--ink); }
+.projects li.active .project-name { color: var(--ink); }
+.projects .meta { display: none; }
+.projects li.x-hidden { display: none; }
+li.x-more .project-name {
   font-size: 9px;
   color: #c9c9c9;
 }
-body[data-v="x"] li.x-more .project-name:hover { color: var(--ink); }
-body[data-v="x"] .gallery {
+li.x-more .project-name:hover { color: var(--ink); }
+
+.gallery {
   position: relative;
+  display: flex;
+  min-width: 0;
   flex-direction: column;
   align-items: center;
-  justify-content: center;   /* photograph + name travel as one centred block */
+  justify-content: center;   /* the photograph travels as one centred block */
   height: 100%;
-  padding-bottom: 40px;      /* air under the caption */
+  padding-bottom: 40px;      /* air under the photograph */
 }
-body[data-v="x"] .gallery .side-wrap,
-body[data-v="x"] .gallery .thumbs { display: none; }
-body[data-v="x"] .gallery .main-wrap {
+.gallery .thumbs { display: none; }
+.gallery .main-wrap {
   flex: none;
   min-height: 0;
   width: 100%;
   gap: 20px;                        /* air between the two prints of a diptych */
 }
-body[data-v="x"] .gallery .main-wrap > .photo {
-  max-height: calc(100vh - 250px);   /* nav + titles + caption + air below */
-  max-height: calc(100dvh - 250px);
+.gallery .main-wrap > .photo {
+  max-height: calc(100vh - 220px);   /* nav + titles + air below */
+  max-height: calc(100dvh - 220px);
   /* above the halves: inside the print you zoom, outside it you navigate */
   position: relative;
   z-index: 45;
   cursor: zoom-in;
 }
 /* two verticals of the same project hang side by side (ref. E. Monsalve) */
-body[data-v="x"] .gallery .main-wrap.pair > .photo { max-width: calc(50% - 10px); }
-/* the project name, very subtle, under the photograph */
-body[data-v="x"] .gallery .caption {
-  flex: none;
-  margin-top: 14px;
-  color: #a3a3a3;
-  text-align: center;
-}
+.gallery .main-wrap.pair > .photo { max-width: calc(50% - 10px); }
+
 /* the two halves of the room: left goes back, right goes forward; the
    cursor itself is the arrow — the same dark one as the lightbox */
-.x-nav { display: none; }
-body[data-v="x"] .x-nav {
+.x-nav {
   display: block;
   position: absolute;
   top: 0; bottom: 0;
   width: 50%;
   z-index: 40;
 }
-/* the same dark arrows as the lightbox */
-body[data-v="x"] .x-prev {
+.x-prev {
   left: 0;
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M34%2020H6M16%2010L6%2020l10%2010' fill='none' stroke='%23202020' stroke-width='2'/%3E%3C/svg%3E") 20 20, w-resize;
 }
-body[data-v="x"] .x-next {
+.x-next {
   right: 0;
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M6%2020h28M24%2010l10%2010-10%2010' fill='none' stroke='%23202020' stroke-width='2'/%3E%3C/svg%3E") 20 20, e-resize;
 }
-/* «Miniaturas» — quiet, in the lower left corner */
-.x-sheet-btn { display: none; }
-body[data-v="x"] .x-sheet-btn {
+
+/* «Thumbnails» — quiet, in the lower left corner */
+.x-sheet-btn {
   all: unset;
   display: block;
   position: fixed;
@@ -604,14 +264,14 @@ body[data-v="x"] .x-sheet-btn {
   cursor: pointer;
   transition: color 0.2s;
 }
-body[data-v="x"] .x-sheet-btn:hover { color: var(--ink); }
+.x-sheet-btn:hover { color: var(--ink); }
+
 /* the sheet: one photograph per project, its name very subtle underneath */
-body[data-v="x"] main.work.x-grid { overflow-y: auto; }
-body[data-v="x"] .x-grid .gallery { height: auto; }
-body[data-v="x"] .x-grid .gallery .main-wrap,
-body[data-v="x"] .x-grid .gallery .caption,
-body[data-v="x"] .x-grid .x-nav { display: none; }
-body[data-v="x"] .x-grid .gallery .thumbs {
+main.work.x-grid { overflow-y: auto; }
+.x-grid .gallery { height: auto; }
+.x-grid .gallery .main-wrap,
+.x-grid .x-nav { display: none; }
+.x-grid .gallery .thumbs {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 36px 20px;
@@ -619,17 +279,22 @@ body[data-v="x"] .x-grid .gallery .thumbs {
   align-items: end;
   padding-bottom: 64px;
 }
-body[data-v="x"] .x-grid .thumbs .cell {
+.x-grid .thumbs .cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  min-width: 0;
   flex-direction: column;
   gap: 10px;
   cursor: pointer;
 }
-body[data-v="x"] .x-grid .thumbs .cell > .photo {
+.x-grid .thumbs .cell > .photo {
   max-height: 32vh;
   transition: opacity 0.25s;
 }
-body[data-v="x"] .x-grid .thumbs .cell:hover > .photo { opacity: 0.8; }
-body[data-v="x"] .x-grid .thumbs .cell::after {
+.x-grid .thumbs .cell:hover > .photo { opacity: 0.8; }
+.x-grid .thumbs .cell::after {
   content: attr(data-caption);
   font-family: var(--mono);
   font-size: 10px;
@@ -638,82 +303,38 @@ body[data-v="x"] .x-grid .thumbs .cell::after {
   color: #a3a3a3;
 }
 
-/* ════════════ ABOUT ════════════ */
+/* ════════════ ABOUT ════════════
+   Portrait and text centred on each other. */
 .about {
   display: grid;
-  align-items: start;
   gap: 20px;
   padding: 0 var(--margin) var(--margin);
-}
-.about .portrait { max-height: calc(100vh - 140px); }
-.about .portrait { cursor: zoom-in; }
-.about .portrait:not(.photo) { aspect-ratio: 3 / 4; }   /* only the empty frame */
-.about .text-col { display: flex; flex-direction: column; min-height: 0; }
-.about .lede { font-family: var(--serif); line-height: 1.2; }
-.about .text-col p + p { margin-top: 1.2em; }
-.about .contact { margin-top: auto; }
-.about .contact a { border-bottom: 1px solid var(--ink); }
-.about .contact a:hover { border-color: var(--accent); }
-
-/* — A: portrait on the 3 left columns, text on the 4 right — */
-body[data-v="a"] .about { grid-template-columns: repeat(7, 1fr); }
-body[data-v="a"] .about .portrait-col { grid-column: 1 / span 3; }
-body[data-v="a"] .about .text-col { grid-column: 4 / span 4; max-width: 620px; }
-body[data-v="a"] .about .lede { font-size: clamp(20px, 3.4vh, 32px); margin-bottom: 5vh; }
-body[data-v="a"] .about .body-block { font-size: 14px; }
-body[data-v="a"] .about .portrait { transition: opacity 0.25s; }
-body[data-v="a"] .about .portrait:hover { opacity: 0.85; }
-
-/* — B: editorial — no portrait, one centered serif column — */
-body[data-v="b"] .about { grid-template-columns: 1fr; place-items: center; }
-body[data-v="b"] .about .portrait-col { display: none; }
-body[data-v="b"] .about .text-col {
-  max-width: 680px;
-  text-align: center;
-  justify-content: center;
-}
-body[data-v="b"] .about .lede { font-size: clamp(22px, 4vh, 38px); margin-bottom: 5vh; }
-body[data-v="b"] .about .body-block { font-size: 13px; max-width: 520px; margin: 0 auto; }
-body[data-v="b"] .about .contact { margin: 6vh auto 0; }
-
-/* — C: archive — text narrow on the left, portrait right — */
-body[data-v="c"] .about { grid-template-columns: 5fr 4fr; }
-body[data-v="c"] .about .portrait-col { order: 2; }
-body[data-v="c"] .about .text-col { order: 1; max-width: 540px; }
-body[data-v="c"] .about .lede { font-size: clamp(20px, 3.4vh, 32px); margin-bottom: 5vh; }
-body[data-v="c"] .about .body-block { font-size: 13px; }
-body[data-v="c"] .about .portrait:hover { border-color: var(--ink); background-color: #f4f4f4; }
-
-/* — D: muro — portrait small and centered above the text — */
-body[data-v="d"] .about {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 20px;
-}
-body[data-v="d"] .about .portrait-col { flex: none; }
-body[data-v="d"] .about .portrait { max-height: 42vh; }
-body[data-v="d"] .about .text-col { max-width: 560px; flex: none; }
-body[data-v="d"] .about .lede { font-size: clamp(18px, 3vh, 28px); margin-bottom: 3vh; }
-body[data-v="d"] .about .body-block { font-size: 13px; }
-body[data-v="d"] .about .contact { margin-top: 3vh; }
-body[data-v="d"] .about .portrait { transition: transform 0.25s ease; }
-body[data-v="d"] .about .portrait:hover { transform: scale(1.025); }
-
-/* — X: serie — A's about; portrait and text centred on each other — */
-body[data-v="x"] .about {
   grid-template-columns: repeat(7, 1fr);
   align-items: center;     /* the two columns centre on each other */
   align-content: center;   /* and the whole row centres in the page */
 }
-body[data-v="x"] .about .contact { margin-top: 6vh; }
-body[data-v="x"] .about .contact a { border-bottom: none; }
-body[data-v="x"] .about .portrait-col { grid-column: 1 / span 3; }
-body[data-v="x"] .about .text-col { grid-column: 4 / span 4; max-width: 620px; }
-body[data-v="x"] .about .lede { font-size: clamp(20px, 3.4vh, 32px); margin-bottom: 5vh; }
-body[data-v="x"] .about .body-block { font-size: 15px; }
-body[data-v="x"] .about .portrait { cursor: default; }
+.about .portrait {
+  max-height: calc(100vh - 140px);
+  cursor: default;
+}
+.about .portrait:not(.photo) { aspect-ratio: 3 / 4; }   /* only the empty frame */
+.about .portrait-col { grid-column: 1 / span 3; }
+.about .text-col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  grid-column: 4 / span 4;
+  max-width: 620px;
+}
+.about .lede {
+  font-family: var(--serif);
+  line-height: 1.2;
+  font-size: clamp(20px, 3.4vh, 32px);
+  margin-bottom: 5vh;
+}
+.about .text-col p + p { margin-top: 1.2em; }
+.about .body-block { font-size: 15px; }
+.about .contact { margin-top: 6vh; }
 
 /* ════════════ LIGHTBOX ════════════ */
 .lightbox {
@@ -813,122 +434,40 @@ body[data-v="x"] .about .portrait { cursor: default; }
 .lightbox.lb-zoomed figcaption { display: none; }
 .lightbox.lb-zoomed .lb-nav { display: none; }   /* panning, not navigating */
 
-/* A: plain white, mono caption */
-body[data-v="a"] .lightbox figcaption {
-  font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em;
-}
-
-/* B: editorial — generous margins, serif caption */
-body[data-v="b"] .lightbox .lb-box { max-width: 70vw; max-height: 72vh; }
-body[data-v="b"] .lightbox figcaption { font-family: var(--serif); font-size: 20px; }
-
-/* D: muro — near full-screen, tiny caption */
-body[data-v="d"] .lightbox .lb-box { max-width: 92vw; max-height: 86vh; }
-body[data-v="d"] .lightbox figcaption {
-  font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: #999;
-}
-
-/* C: archive — dark room */
-body[data-v="c"] .lightbox { background: rgba(32, 32, 32, 0.96); color: #fff; }
-body[data-v="c"] .lightbox .lb-close { color: #aaa; }
-body[data-v="c"] .lightbox figcaption {
-  font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: #fff;
-}
-body[data-v="c"] .lightbox .ph { background-color: rgba(255, 255, 255, 0.04); }
-body[data-v="c"] .lightbox .lb-prev {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M34%2020H6M16%2010L6%2020l10%2010' fill='none' stroke='%23ffffff' stroke-width='2'/%3E%3C/svg%3E") 20 20, w-resize;
-}
-body[data-v="c"] .lightbox .lb-next {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M6%2020h28M24%2010l10%2010-10%2010' fill='none' stroke='%23ffffff' stroke-width='2'/%3E%3C/svg%3E") 20 20, e-resize;
-}
-body[data-v="c"] .lightbox .lb-thumbs { background: #202020; }
-body[data-v="c"] .lightbox .lb-btn:hover { color: #fff; }
-
-/* ————— Version widget ————— */
-.vwidget {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 300;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  padding: 8px 10px;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-}
-.vwidget span.label { margin-right: 8px; color: #999; text-transform: uppercase; }
-.vwidget button {
-  all: unset;
-  cursor: pointer;
-  padding: 2px 7px;
-  color: #999;
-}
-.vwidget button:hover { color: var(--ink); }
-.vwidget button.active { color: var(--paper); background: var(--ink); }
-
-
-/* ════════════ MOBILE ════════════
-   Tighter margins everywhere; version X becomes a swipeable viewer and the
-   other versions collapse their grids into one column. */
+/* ════════════ MOBILE ════════════ */
 @media (max-width: 700px) {
   :root { --margin: 16px; }
   body { font-size: 12px; }
   .nav .brand { font-size: 18px; }
   .nav .links { gap: 16px; }
 
-  /* — X: landing — */
-  body[data-v="x"] .landing .name { font-size: 30px; top: 20px; }
-  body[data-v="x"] .landing .menu { font-size: 20px; bottom: 36px; }
+  /* — landing — */
+  .landing .name { font-size: 30px; top: 20px; }
+  .landing .menu { font-size: 20px; bottom: 36px; }
 
-  /* — X: viewer — tap either half or swipe; the photo fills the width — */
-  body[data-v="x"] .work {
+  /* — viewer — tap either half or swipe; the photo fills the width — */
+  .work {
     height: calc(100vh - 62px);
     height: calc(100dvh - 62px);
     padding-bottom: 16px;
   }
-  body[data-v="x"] .gallery .main-wrap > .photo {
-    max-height: calc(100vh - 220px);
-    max-height: calc(100dvh - 220px);
+  .gallery .main-wrap > .photo {
+    max-height: calc(100vh - 200px);
+    max-height: calc(100dvh - 200px);
   }
-  body[data-v="x"] .gallery { padding-bottom: 30px; }
-  body[data-v="x"] .gallery .main-wrap { gap: 10px; }
-  body[data-v="x"] .gallery .main-wrap.pair > .photo { max-width: calc(50% - 5px); }
-  body[data-v="x"] .gallery .caption { margin-top: 10px; }
-  body[data-v="x"] .projects ul { gap: 6px 16px; }
-  body[data-v="x"] .x-sheet-btn { left: 16px; bottom: 12px; }
-  body[data-v="x"] .x-grid .gallery .thumbs { grid-template-columns: repeat(2, 1fr); gap: 28px 12px; }
-  body[data-v="x"] .x-grid .thumbs .cell > .photo { max-height: none; }
+  .gallery { padding-bottom: 30px; }
+  .gallery .main-wrap { gap: 10px; }
+  .gallery .main-wrap.pair > .photo { max-width: calc(50% - 5px); }
+  .projects ul { gap: 6px 16px; }
+  .x-sheet-btn { left: 16px; bottom: 12px; }
+  .x-grid .gallery .thumbs { grid-template-columns: repeat(2, 1fr); gap: 28px 12px; }
+  .x-grid .thumbs .cell > .photo { max-height: none; }
 
-  /* — X: about stacks — */
-  body[data-v="x"] .about { display: flex; flex-direction: column; }
-  body[data-v="x"] .about .portrait { max-height: 60vh; }
-  body[data-v="x"] .about .text-col { max-width: none; }
-  body[data-v="x"] .about .contact { margin-top: 5vh; }
-
-  /* — A / B / C: one column, the list above the photographs — */
-  body[data-v="a"] .work, body[data-v="b"] .work, body[data-v="c"] .work { grid-template-columns: 1fr; }
-  body[data-v="a"] .projects, body[data-v="a"] .gallery { grid-column: auto; }
-  body[data-v="a"] .projects, body[data-v="b"] .projects {
-    position: static;
-    max-height: none;
-    overflow: visible;
-  }
-  body[data-v="a"] .gallery .thumbs { grid-template-columns: repeat(2, 1fr); }
-  body[data-v="b"] .gallery .thumbs { grid-template-columns: 1fr; gap: 8vh 0; }
-  body[data-v="c"] .gallery .thumbs { grid-template-columns: repeat(2, 1fr); }
-  body[data-v="a"] .about, body[data-v="c"] .about { grid-template-columns: 1fr; }
-  body[data-v="a"] .about .portrait-col, body[data-v="a"] .about .text-col { grid-column: auto; }
-  body[data-v="c"] .about .portrait-col { order: 1; }
-  body[data-v="c"] .about .text-col { order: 2; }
-
-  /* the landing texts of A/B/C/D breathe on a small screen */
-  body[data-v="a"] .landing .name { font-size: 30px; bottom: 40px; }
-  body[data-v="a"] .landing .menu { font-size: 20px; }
-  body[data-v="c"] .landing .menu { top: 90px; }
+  /* — about stacks — */
+  .about { display: flex; flex-direction: column; }
+  .about .portrait { max-height: 60vh; }
+  .about .text-col { max-width: none; }
+  .about .contact { margin-top: 5vh; }
 
   /* lightbox chrome */
   .lightbox .lb-box { max-width: 94vw; max-height: 72vh; }

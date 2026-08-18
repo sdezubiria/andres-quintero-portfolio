@@ -6,14 +6,13 @@ No necesita servidor ni build: se abre `index.html` en el navegador.
 ## Páginas
 
 - `index.html` — portada: una fotografía a pantalla completa, el nombre y la navegación
-- `work.html` — los proyectos y sus fotografías (ver «Versiones»)
+- `work.html` — los proyectos y sus fotografías (ver «El diseño»)
 - `about.html` — biografía con retrato
 
 ## Las fotografías
 
-**21 proyectos, 163 fotografías.** Las versiones A–D muestran *todas* las
-fotografías del proyecto elegido (la página se desplaza cuando no caben);
-la versión X muestra una sola por vez y el resto se alcanza desplazando la serie.
+**21 proyectos, 163 fotografías.** El visor muestra una sola por vez y el
+resto se alcanza desplazando la serie.
 
 Las fotos viven en `assets/img/<proyecto>/`, dos archivos por foto:
 
@@ -39,45 +38,28 @@ de las dos rutas (`HERO`, `PORTRAIT`) que hay al principio del script.
 Los originales **no** están en el repositorio (ver `.gitignore`): quedan en el
 disco del fotógrafo y aquí sólo se guardan las versiones web.
 
-## Versiones
+## El diseño
 
-Cada página tiene un widget flotante (abajo a la derecha) con las opciones
-**A / B / C / D / X**. Cada una rediseña el layout completo:
+Un único diseño (ref. emmanuelsmonsalve.com), elegido tras la ronda de
+versiones A–X del prototipo (el sistema de versiones ya se retiró):
 
-- **A · Retícula** — como el Figma: portada a sangre con el nombre centrado
-  abajo; en work, los nombres de proyecto a la izquierda, la foto elegida en
-  grande a la derecha y debajo la hoja de contacto con todas las demás.
-- **B · Editorial** (ref. sebastianfaena.com) — página blanca, nombre en serif
-  arriba a la derecha; en work el proyecto se recorre como una secuencia de
-  dípticos, dos copias grandes por fila con su pie en serif.
-- **C · Archivo** (ref. quentindebrieystudio.com) — nombre grande arriba a la
-  izquierda; en work los proyectos son una barra fija y las fotos una
-  cuadrícula de cuatro columnas.
-- **D · Muro** (ref. VSCO / are.na) — sin división por proyectos: las 163 fotos
-  en una cuadrícula justificada, cada fila ajustada al ancho exacto de la página.
-- **X · Serie** (ref. emmanuelsmonsalve.com) — la versión del feedback de Andrés,
-  y la que se abre por defecto. La intro de A con el nombre arriba; en work el
-  archivo entero como una serie que se desplaza con las dos mitades de la
-  pantalla (el cursor es una flecha blanca), la rueda, ← / → o un gesto en el
-  teléfono. Dos fotos verticales seguidas del mismo proyecto cuelgan juntas como
-  díptico. Arriba, unos pocos títulos de proyecto (mono, como la barra de C) con
-  «Show more» para el resto; el nombre del proyecto va muy sutil bajo la
-  fotografía y «Thumbnails» abre una portada por proyecto. Sin lightbox. Los
-  textos van en la mono; los títulos, en la serif de la marca.
+- **Portada** — la fotografía a sangre con el nombre centrado arriba y el
+  menú abajo.
+- **Work** — el archivo entero como una serie: una fotografía por vez, que se
+  desplaza con las dos mitades de la pantalla (el cursor es la flecha), la
+  rueda, ← / → o un gesto en el teléfono. Dos fotos verticales seguidas del
+  mismo proyecto cuelgan juntas como díptico. Arriba, unos pocos títulos de
+  proyecto con «Show more» para el resto — el nombre del proyecto vive solo
+  ahí (y en el pie del lightbox), no bajo la fotografía. «Thumbnails» (abajo a
+  la izquierda) abre una portada por proyecto para saltar directo.
+- **Lightbox** — clic dentro de la copia: la foto en grande, recorrible con
+  las mismas mitades, la rueda o las flechas; su propio botón «Thumbnails»
+  muestra la hoja de contactos del proyecto y otro clic dentro de la copia
+  hace zoom al archivo completo.
+- **About** — retrato y texto centrados el uno en el otro.
 
-En A–D cada versión tiene su propio **lightbox** (clic en cualquier foto): A, B
-y D sobre fondo blanco, C como cuarto oscuro. El lightbox recorre las fotos del
-mismo proyecto — clic en cada mitad (cursor de flecha), rueda, ← / → — y el
-botón «Thumbnails» muestra la hoja de contactos del proyecto. En X no hay
-lightbox: la propia página de work es el visor.
-
-Todo tiene una pasada **móvil** (≤ 700 px): X se vuelve un visor a lo ancho con
-gesto de swipe, y A–C colapsan sus retículas a una columna.
-
-La elección se guarda (localStorage) y se mantiene entre páginas; también se
-puede compartir con enlace, p. ej. `index.html?v=b`. Las variantes se definen en
-CSS con `body[data-v="..."]` — añadir una versión E es añadir un bloque más en
-`css/style.css` y una letra en `js/versions.js`.
+Todo tiene una pasada **móvil** (≤ 700 px): el visor se vuelve un carrusel a
+lo ancho con gesto de swipe.
 
 ## Marca (AQ BRAND.pdf)
 

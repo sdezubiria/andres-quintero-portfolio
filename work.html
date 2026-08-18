@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/photos.js"></script>
-  <script src="js/versions.js"></script>
+  <script src="js/lightbox.js"></script>
 </head>
 <body>
   <header class="nav">
@@ -25,16 +25,14 @@
 
     <section class="gallery">
       <div class="main-wrap fit-wrap"></div>
-      <div class="side-wrap fit-wrap"></div>
       <div class="thumbs" id="thumbs"></div>
-      <p class="caption category" id="caption"></p>
-      <!-- version X: the two halves that displace the series -->
+      <!-- the two halves that displace the series -->
       <div class="x-nav x-prev" aria-hidden="true"></div>
       <div class="x-nav x-next" aria-hidden="true"></div>
     </section>
   </main>
 
-  <!-- version X: one cover per project, very subtle -->
+  <!-- one cover per project, very subtle -->
   <button class="x-sheet-btn" type="button">Thumbnails</button>
 
   <script>
@@ -78,148 +76,20 @@
 
     var list = document.getElementById('project-list');
     var thumbs = document.getElementById('thumbs');
-    var caption = document.getElementById('caption');
     var mainWrap = document.querySelector('.main-wrap');
-    var sideWrap = document.querySelector('.side-wrap');
-    var activeProject = 0, activePhoto = 0;
+    var workMain = document.querySelector('main.work');
+    var sheetBtn = document.querySelector('.x-sheet-btn');
 
     PROJECTS.forEach(function (p, i) {
       var li = document.createElement('li');
-      li.innerHTML = '<span class="project-name"></span>' +
-        '<div class="meta category">' + p.photos.length + ' photographs</div>';
+      li.innerHTML = '<span class="project-name"></span>';
       li.querySelector('.project-name').textContent = p.name;
-      li.addEventListener('click', function () {
-        if (document.body.dataset.v === 'x') { xJumpProject(i); return; }
-        selectProject(i);
-        window.scrollTo({ top: 0 });   // a new project starts at its first photo
-      });
+      li.addEventListener('click', function () { xJumpProject(i); });
       list.appendChild(li);
     });
 
-    function captionFor(k) {
-      return PROJECTS[activeProject].name + ' — ' + (k + 1) + ' / ' + PROJECTS[activeProject].photos.length;
-    }
-
-    function selectProject(i) {
-      activeProject = i;
-      list.querySelectorAll('li').forEach(function (li, j) {
-        li.classList.toggle('active', j === i);
-      });
-      thumbs.innerHTML = '';
-      var p = PROJECTS[i];
-      p.photos.forEach(function (ratio, k) {
-        var cell = document.createElement('div');
-        cell.className = 'cell fit-wrap';
-        cell.dataset.caption = p.name + ' ' + (k + 1);
-        cell.appendChild(photoImg(p, k, false));
-        cell.addEventListener('click', function () {
-          // only A has a big view to feed; elsewhere the sheet is the layout
-          if (document.body.dataset.v === 'a') {
-            selectPhoto(k);
-          } else {
-            AQ.openLightbox({ photos: galleryOf(p), index: k });
-          }
-        });
-        thumbs.appendChild(cell);
-      });
-      selectPhoto(0);
-    }
-
-    function selectPhoto(k) {
-      activePhoto = k;
-      var p = PROJECTS[activeProject];
-      mainWrap.innerHTML = '';
-      mainWrap.appendChild(photoImg(p, k, true));
-      // B shows a second photo of the project as an editorial spread
-      sideWrap.innerHTML = '';
-      sideWrap.appendChild(photoImg(p, (k + 1) % p.photos.length, true));
-      thumbs.querySelectorAll('.cell').forEach(function (t, j) {
-        t.classList.toggle('active', j === k);
-      });
-      caption.textContent = captionFor(k);
-    }
-
-    mainWrap.addEventListener('click', function () {
-      if (document.body.dataset.v === 'x') return;   // X has no lightbox
-      AQ.openLightbox({ photos: galleryOf(PROJECTS[activeProject]), index: activePhoto });
-    });
-    sideWrap.addEventListener('click', function () {
-      var p = PROJECTS[activeProject];
-      AQ.openLightbox({ photos: galleryOf(p), index: (activePhoto + 1) % p.photos.length });
-    });
-
-    // ————— Version D: one justified wall of every photo (VSCO / are.na) —————
-    // Photos are packed into rows until a row is about as tall as TARGET_ROW,
-    // then the row is stretched to the exact page width. Every photo keeps its
-    // proportions exactly; the wall is as tall as it needs to be and scrolls.
-    var ALL = [];
-    PROJECTS.forEach(function (p) {
-      p.photos.forEach(function (ratio, k) {
-        ALL.push({
-          ratio: ratio,
-          src: srcOf(p, k),
-          thumb: thumbOf(p, k),
-          caption: p.name + ' — ' + (k + 1) + ' / ' + p.photos.length
-        });
-      });
-    });
-
-    var ALLG = ALL.map(function (ph) {
-      return { ratio: ph.ratio[0] / ph.ratio[1], src: ph.src, thumb: ph.thumb, caption: ph.caption };
-    });
-
-    function buildWall() {
-      thumbs.innerHTML = '';
-      var GAP = 8;
-      var W = thumbs.clientWidth;
-      if (!W) return;
-      var TARGET_ROW = Math.max(180, Math.min(340, innerHeight * 0.30));
-      var ratios = ALL.map(function (ph) { return ph.ratio[0] / ph.ratio[1]; });
-
-      // fill a row until it would be shorter than TARGET_ROW, then close it
-      var rows = [], row = [], sum = 0;
-      ratios.forEach(function (r, i) {
-        row.push(i); sum += r;
-        if ((W - GAP * (row.length - 1)) / sum <= TARGET_ROW) { rows.push(row); row = []; sum = 0; }
-      });
-      if (row.length) rows.push(row);
-
-      rows.forEach(function (r, ri) {
-        var div = document.createElement('div');
-        div.className = 'grid-row';
-        var s = r.reduce(function (acc, i) { return acc + ratios[i]; }, 0);
-        // a full row is justified to the page width; a short last row keeps
-        // the target height instead of blowing its few photos up
-        var h = ri === rows.length - 1 && (W - GAP * (r.length - 1)) / s > TARGET_ROW
-          ? TARGET_ROW
-          : (W - GAP * (r.length - 1)) / s;
-        r.forEach(function (i) {
-          var img = document.createElement('img');
-          img.className = 'ph photo';
-          img.alt = '';
-          img.loading = 'lazy';
-          img.decoding = 'async';
-          img.src = ALL[i].thumb;
-          img.style.height = Math.floor(h) + 'px';
-          img.style.width = Math.floor(h * ratios[i]) + 'px';
-          img.title = ALL[i].caption;
-          img.addEventListener('click', function () {
-            AQ.openLightbox({ photos: ALLG, index: i });
-          });
-          div.appendChild(img);
-        });
-        thumbs.appendChild(div);
-      });
-      caption.textContent = ALL.length + ' photographs';
-    }
-
-    // ————— Version X: the archive as one continuous series —————
     // One photograph at a time — two verticals of the same project hang side
-    // by side as a diptych (ref. emmanuelsmonsalve.com). The halves (white
-    // arrow cursor, outside the print), the wheel, ← / → and a swipe displace
-    // the series; clicking inside the print opens a zoomable lightbox. A few
-    // titles on top («Show more» expands them) and «Thumbnails» swaps in one
-    // cover per project.
+    // by side as a diptych (ref. emmanuelsmonsalve.com).
     var xSlides = [];      // each slide: { proj, idxs: [k] or [k, k+1] }
     var xProjSlide = [];   // first slide of each project
     PROJECTS.forEach(function (p, i) {
@@ -237,8 +107,6 @@
       }
     });
     var xIndex = 0;
-    var workMain = document.querySelector('main.work');
-    var sheetBtn = document.querySelector('.x-sheet-btn');
 
     // the titles bar shows only a few projects; «Show more» reveals the rest
     var X_SHOWN = 6;
@@ -274,8 +142,7 @@
         });
         mainWrap.appendChild(img);
       });
-      var nums = sl.idxs.map(function (k) { return k + 1; }).join('–');
-      caption.textContent = p.name + ' — ' + nums + ' / ' + p.photos.length;
+      // the project name lives only in the titles bar (and in the lightbox)
       list.querySelectorAll('li').forEach(function (li, j) {
         li.classList.toggle('active', j === sl.proj);
       });
@@ -300,32 +167,30 @@
       workMain.classList.toggle('x-grid', on);
       sheetBtn.textContent = on ? 'Close' : 'Thumbnails';
     }
-    function buildX() {
-      thumbs.innerHTML = '';
-      PROJECTS.forEach(function (p, i) {
-        var cell = document.createElement('div');
-        cell.className = 'cell fit-wrap';
-        cell.dataset.caption = p.name;
-        cell.appendChild(photoImg(p, 0, false));
-        cell.addEventListener('click', function () { xJumpProject(i); });
-        thumbs.appendChild(cell);
-      });
-      xSetGrid(false);
-      xRender();
-    }
+
+    // the sheet: one cover per project
+    PROJECTS.forEach(function (p, i) {
+      var cell = document.createElement('div');
+      cell.className = 'cell fit-wrap';
+      cell.dataset.caption = p.name;
+      cell.appendChild(photoImg(p, 0, false));
+      cell.addEventListener('click', function () { xJumpProject(i); });
+      thumbs.appendChild(cell);
+    });
+
     document.querySelector('.x-prev').addEventListener('click', function () { xGo(-1); });
     document.querySelector('.x-next').addEventListener('click', function () { xGo(1); });
     sheetBtn.addEventListener('click', function () {
       xSetGrid(!workMain.classList.contains('x-grid'));
     });
     document.addEventListener('keydown', function (e) {
-      if (document.body.dataset.v !== 'x' || workMain.classList.contains('x-grid')) return;
+      if (document.body.classList.contains('lb-open') || workMain.classList.contains('x-grid')) return;
       if (e.key === 'ArrowRight') xGo(1);
       else if (e.key === 'ArrowLeft') xGo(-1);
     });
     var xWheelAt = 0;
     document.querySelector('.gallery').addEventListener('wheel', function (e) {
-      if (document.body.dataset.v !== 'x' || workMain.classList.contains('x-grid')) return;
+      if (workMain.classList.contains('x-grid')) return;
       e.preventDefault();
       // dominant axis: a horizontal trackpad swipe displaces the series too
       var delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
@@ -337,32 +202,17 @@
     // a swipe on a touch screen displaces the series too
     var xTouchX = null;
     document.querySelector('.gallery').addEventListener('touchstart', function (e) {
-      if (document.body.dataset.v !== 'x') return;
       xTouchX = e.touches[0].clientX;
     }, { passive: true });
     document.querySelector('.gallery').addEventListener('touchend', function (e) {
-      if (document.body.dataset.v !== 'x' || xTouchX === null) return;
+      if (xTouchX === null) return;
       var dx = e.changedTouches[0].clientX - xTouchX;
       xTouchX = null;
       if (Math.abs(dx) > 40) xGo(dx < 0 ? 1 : -1);
     });
 
-    function render() {
-      if (document.body.dataset.v === 'd') buildWall();
-      else if (document.body.dataset.v === 'x') buildX();
-      else selectProject(activeProject);
-      window.scrollTo(0, 0);
-    }
-    document.addEventListener('aq:version', render);
-
-    var resizeTimer;
-    window.addEventListener('resize', function () {
-      if (document.body.dataset.v !== 'd') return;
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(buildWall, 120);
-    });
-
-    selectProject(0);
+    xSetGrid(false);
+    xRender();
   </script>
 </body>
 </html>
