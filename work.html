@@ -85,6 +85,10 @@
       li.innerHTML = '<span class="project-name"></span>';
       li.querySelector('.project-name').textContent = p.name;
       li.addEventListener('click', function () { xJumpProject(i); });
+      // hovering a title shows that project's opening image in the viewer;
+      // leaving restores the slide the visitor was on
+      li.addEventListener('mouseenter', function () { renderSlide(xSlides[xProjSlide[i]]); });
+      li.addEventListener('mouseleave', function () { renderSlide(xSlides[xIndex]); });
       list.appendChild(li);
     });
 
@@ -129,8 +133,10 @@
       });
     }
 
-    function xRender() {
-      var sl = xSlides[xIndex], p = PROJECTS[sl.proj];
+    // puts one slide in the viewer — used by the series itself and by the
+    // hover previews on the project titles
+    function renderSlide(sl) {
+      var p = PROJECTS[sl.proj];
       mainWrap.innerHTML = '';
       mainWrap.classList.toggle('pair', sl.idxs.length === 2);
       sl.idxs.forEach(function (k) {
@@ -142,6 +148,11 @@
         });
         mainWrap.appendChild(img);
       });
+    }
+
+    function xRender() {
+      var sl = xSlides[xIndex];
+      renderSlide(sl);
       // the project name lives only in the titles bar (and in the lightbox)
       list.querySelectorAll('li').forEach(function (li, j) {
         li.classList.toggle('active', j === sl.proj);
