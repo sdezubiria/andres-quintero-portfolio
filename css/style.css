@@ -187,6 +187,7 @@ main.work, main.about { flex: 1; }
   flex: none;                      /* the page itself never scrolls */
   height: calc(100vh - 86px);
   height: calc(100dvh - 86px);
+  height: calc(var(--vhpx, 100vh) - 86px);   /* measured: right on every iOS */
   overflow: hidden;
 }
 
@@ -240,6 +241,7 @@ li.x-more .project-name:hover { color: var(--ink); }
   animation: photo-in 0.45s ease;
   max-height: calc(100vh - 220px);   /* nav + titles + air below */
   max-height: calc(100dvh - 220px);
+  max-height: calc(var(--vhpx, 100vh) - 220px);
   /* above the halves: inside the print you zoom, outside it you navigate */
   position: relative;
   z-index: 45;
@@ -483,11 +485,13 @@ main.work.x-grid { overflow-y: auto; }
   .work {
     height: calc(100vh - 62px);
     height: calc(100dvh - 62px);
+    height: calc(var(--vhpx, 100vh) - 62px);
     padding-bottom: 16px;
   }
   .gallery .main-wrap > .photo {
     max-height: calc(100vh - 200px);
     max-height: calc(100dvh - 200px);
+    max-height: calc(var(--vhpx, 100vh) - 200px);
   }
   .gallery { padding-bottom: 30px; }
   .gallery .main-wrap { gap: 10px; width: calc(100% - 48px); }

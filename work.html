@@ -6,6 +6,7 @@
   <title>Work — Andrés Quintero</title>
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/debug.js"></script>
   <script src="js/photos.js"></script>
   <script src="js/lightbox.js"></script>
 </head>
@@ -40,6 +41,16 @@
     // The real projects, generated from the photo folders by tools/build-photos.sh.
     // Each photo carries its own pixel size [w, h] so scaling never distorts it.
     var PROJECTS = window.AQ_PROJECTS || [];
+
+    // The real visible height, measured — old iOS Safari has no dvh unit and
+    // 100vh there includes the strip behind the toolbar. --vhpx tracks the
+    // toolbar as it grows and shrinks.
+    function setVH() {
+      document.documentElement.style.setProperty('--vhpx', window.innerHeight + 'px');
+    }
+    setVH();
+    window.addEventListener('resize', setVH);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', setVH);
 
     // Where each photo lives: assets/img/<slug>/01.jpg and its 520px thumbnail.
     function srcOf(p, k) { return 'assets/img/' + p.slug + '/' + pad(k + 1) + '.jpg'; }
