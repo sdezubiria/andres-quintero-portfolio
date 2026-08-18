@@ -135,8 +135,10 @@ main.work, main.about { flex: 1; }
   position: fixed;
   top: 0; left: 0;
   width: 100%;
+  /* the photograph bleeds behind mobile Safari's toolbar (large viewport),
+     so no blank strip shows; the texts sit at 24% from the edges, clear of it */
   height: 100vh;
-  height: 100dvh;   /* mobile Safari: never taller than what is actually visible */
+  height: 100lvh;
   overflow: hidden;
   display: flex;
   align-items: center;
