@@ -204,15 +204,35 @@
       thumbs.appendChild(cell);
     });
 
-    // the photo number rides beside the cursor while it is on the photograph
+    // the photo number rides beside the cursor while it is on the photograph;
+    // it reads the print under it and turns white over the dark passages
     var tip = document.createElement('div');
     tip.className = 'cursor-tip';
     document.body.appendChild(tip);
+    var sampler = document.createElement('canvas');
+    sampler.width = sampler.height = 6;
+    var sctx = sampler.getContext('2d', { willReadFrequently: true });
+    function darkUnder(img, x, y) {
+      if (!img.naturalWidth) return false;
+      var r = img.getBoundingClientRect();
+      var scale = img.naturalWidth / r.width;
+      // a patch about 30 display px wide where the text sits, kept inside the print
+      var s = 30 * scale;
+      var sx = Math.min(Math.max((x - r.x) * scale - s / 2, 0), img.naturalWidth - s);
+      var sy = Math.min(Math.max((y - r.y) * scale - s / 2, 0), img.naturalHeight - s);
+      try {
+        sctx.drawImage(img, sx, sy, s, s, 0, 0, 6, 6);
+        var d = sctx.getImageData(0, 0, 6, 6).data, lum = 0;
+        for (var i = 0; i < d.length; i += 4) lum += 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+        return lum / (d.length / 4) < 128;
+      } catch (err) { return false; }
+    }
     mainWrap.addEventListener('mousemove', function (e) {
       if (e.target.classList && e.target.classList.contains('photo')) {
         tip.textContent = e.target.dataset.num || '';
         tip.style.left = (e.clientX + 16) + 'px';
         tip.style.top = (e.clientY + 12) + 'px';
+        tip.style.color = darkUnder(e.target, e.clientX + 16, e.clientY + 12) ? '#fff' : '';
         tip.style.display = 'block';
       } else {
         tip.style.display = 'none';
