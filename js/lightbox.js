@@ -36,6 +36,12 @@
     var img = lb.querySelector('img.lb-box');
     var size = fit(ph.ratio || 3 / 2);
     if (ph.src) {
+      // the <img> is reused, so the entry fade must be retriggered by hand
+      if (img.src !== ph.src) {
+        img.style.animation = 'none';
+        void img.offsetWidth;
+        img.style.animation = '';
+      }
       img.src = ph.src;
       img.style.maxWidth = size.w + 'px';
       img.style.maxHeight = size.h + 'px';

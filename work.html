@@ -224,6 +224,19 @@
 
     xSetGrid(false);
     xRender();
+
+    // each project's opening image loads quietly once the page is idle, so
+    // the hover previews on the titles appear without a blank beat
+    window.addEventListener('load', function () {
+      var i = 0;
+      function next() {
+        if (i >= PROJECTS.length) return;
+        var img = new Image();
+        img.onload = img.onerror = next;
+        img.src = srcOf(PROJECTS[i++], 0);
+      }
+      next();
+    });
   </script>
 </body>
 </html>

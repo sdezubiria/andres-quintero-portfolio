@@ -220,7 +220,10 @@ li.x-more .project-name:hover { color: var(--ink); }
   width: 100%;
   gap: 20px;                        /* air between the two prints of a diptych */
 }
+/* every photograph enters with a soft fade */
+@keyframes photo-in { from { opacity: 0; } }
 .gallery .main-wrap > .photo {
+  animation: photo-in 0.45s ease;
   max-height: calc(100vh - 220px);   /* nav + titles + air below */
   max-height: calc(100dvh - 220px);
   /* above the halves: inside the print you zoom, outside it you navigate */
@@ -414,6 +417,7 @@ main.work.x-grid { overflow-y: auto; }
 .lightbox img.lb-box {
   width: auto;
   height: auto;
+  animation: photo-in 0.45s ease;
   cursor: zoom-in;
   position: relative;   /* above the halves: inside the print you zoom… */
   z-index: 206;         /* …outside it you navigate */
