@@ -147,6 +147,34 @@ main.work, main.about { flex: 1; }
   object-fit: cover;   /* full-bleed crop, ratio intact */
   display: block;
 }
+/* iOS Safari only (-webkit-touch-callout exists only there): progressive-blur
+   veils at the exact edges, so the photograph melts into the browser chrome —
+   the status bar above, the search-bar strip below (whose flat colour is the
+   sampled bottom edge via theme-color). */
+@supports (-webkit-touch-callout: none) {
+  .landing::before, .landing::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    z-index: 5;
+    pointer-events: none;
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+  .landing::before {
+    top: 0;
+    height: calc(env(safe-area-inset-top, 0px) + 24px);
+    -webkit-mask-image: linear-gradient(to bottom, black, transparent);
+    mask-image: linear-gradient(to bottom, black, transparent);
+  }
+  .landing::after {
+    bottom: 0;
+    height: calc(env(safe-area-inset-bottom, 0px) + 40px);
+    -webkit-mask-image: linear-gradient(to top, black, transparent);
+    mask-image: linear-gradient(to top, black, transparent);
+  }
+}
+
 .landing .overlay { position: absolute; inset: 0; color: #fff; pointer-events: none; }
 .landing .overlay a { color: inherit; pointer-events: auto; }
 .landing .name, .landing .menu { position: absolute; }
@@ -465,6 +493,32 @@ main.work.x-grid { overflow-y: auto; }
 }
 .lightbox.lb-zoomed figcaption { display: none; }
 .lightbox.lb-zoomed .lb-nav { display: none; }   /* panning, not navigating */
+
+/* iOS Safari: while panning the full-size file, the same progressive blur
+   melts its top and bottom edges into the browser chrome */
+@supports (-webkit-touch-callout: none) {
+  .lightbox.lb-zoomed::before, .lightbox.lb-zoomed::after {
+    content: '';
+    position: fixed;
+    left: 0; right: 0;
+    z-index: 220;
+    pointer-events: none;
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
+  .lightbox.lb-zoomed::before {
+    top: 0;
+    height: calc(env(safe-area-inset-top, 0px) + 32px);
+    -webkit-mask-image: linear-gradient(to bottom, black, transparent);
+    mask-image: linear-gradient(to bottom, black, transparent);
+  }
+  .lightbox.lb-zoomed::after {
+    bottom: 0;
+    height: calc(env(safe-area-inset-bottom, 0px) + 48px);
+    -webkit-mask-image: linear-gradient(to top, black, transparent);
+    mask-image: linear-gradient(to top, black, transparent);
+  }
+}
 
 /* ════════════ MOBILE ════════════ */
 @media (max-width: 700px) {
