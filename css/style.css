@@ -133,10 +133,6 @@ main.work, main.about { flex: 1; }
    Full-bleed photograph, the name centred on top, the menu at the bottom. */
 .landing {
   position: fixed;
-  /* inset:0 — no viewport units: the box always matches Safari's own layout
-     viewport exactly, so the photograph runs behind the toolbar with no blank
-     strip whether the bar is expanded or collapsed. The texts sit at 24% from
-     the edges, clear of the bar. */
   inset: 0;
   overflow: hidden;
   display: flex;
