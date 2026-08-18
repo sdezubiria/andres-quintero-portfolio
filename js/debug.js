@@ -13,12 +13,20 @@
     target.style.outlineOffset = '-2px';
     var r = target.getBoundingClientRect();
     var os = (navigator.userAgent.match(/OS ([\d_]+)/) || [])[1] || '?';
+    var blur = document.querySelector('.hero-blur');
+    var blurState = blur
+      ? getComputedStyle(blur).display + ' / ' + getComputedStyle(blur).filter.slice(0, 10) +
+        ' / mask:' + (getComputedStyle(blur).webkitMaskImage || getComputedStyle(blur).maskImage || 'none').slice(0, 15)
+      : 'no element';
     el.textContent =
       'innerH      ' + innerHeight +
       '\nvisualVP    ' + (vv ? Math.round(vv.height) + '  top ' + Math.round(vv.offsetTop) : 'n/a') +
       '\nhtml client ' + document.documentElement.clientHeight +
       '\nred box     h ' + Math.round(r.height) + '  bottom ' + Math.round(r.bottom) +
       '\ndvh/lvh     ' + CSS.supports('height', '100dvh') + ' / ' + CSS.supports('height', '100lvh') +
+      '\ncallout     ' + CSS.supports('-webkit-touch-callout', 'none') +
+      '\nblur layer  ' + blurState +
+      '\ncss ver     ' + (function () { var l = document.querySelector('link[rel=stylesheet]'); return (l.href.match(/v=(\d+)/) || [0, 'sin v'])[1]; })() +
       '\nscreen      ' + screen.width + 'x' + screen.height +
       '\niOS         ' + os.replace(/_/g, '.');
   }
