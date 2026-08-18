@@ -235,33 +235,6 @@ li.x-more .project-name:hover { color: var(--ink); }
 /* two verticals of the same project hang side by side (ref. E. Monsalve) */
 .gallery .main-wrap.pair > .photo { max-width: calc(50% - 10px); }
 
-/* hover previews on the titles: the photograph that was on screen holds
-   (the .ghost layer) for half a second and vanishes at the exact moment the
-   hovered one starts to fade in — two projects are never on screen at once.
-   Only here, never in the series itself or the lightbox. */
-.gallery .main-wrap > .photo.soft { animation: photo-in 0.45s ease 0.5s backwards; }
-@keyframes ghost-out { to { opacity: 0; visibility: hidden; } }
-.gallery .main-wrap .ghost {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  z-index: 44;              /* under the live photograph */
-  pointer-events: none;
-  animation: ghost-out 0.01s linear 0.5s forwards;   /* holds, then goes at once */
-}
-.gallery .main-wrap .ghost > .photo {
-  display: block;
-  max-width: 100%;
-  width: auto;
-  height: auto;
-  max-height: calc(100vh - 220px);
-  max-height: calc(100dvh - 220px);
-}
-.gallery .main-wrap .ghost.pair > .photo { max-width: calc(50% - 10px); }
-
 /* the two halves of the room: left goes back, right goes forward; the
    cursor itself is the arrow — the same dark one as the lightbox */
 .x-nav {

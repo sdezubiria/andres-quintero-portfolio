@@ -87,8 +87,8 @@
       li.addEventListener('click', function () { xJumpProject(i); });
       // hovering a title shows that project's opening image in the viewer;
       // leaving restores the slide the visitor was on
-      li.addEventListener('mouseenter', function () { renderSlide(xSlides[xProjSlide[i]], true); });
-      li.addEventListener('mouseleave', function () { renderSlide(xSlides[xIndex], true); });
+      li.addEventListener('mouseenter', function () { renderSlide(xSlides[xProjSlide[i]]); });
+      li.addEventListener('mouseleave', function () { renderSlide(xSlides[xIndex]); });
       list.appendChild(li);
     });
 
@@ -147,29 +147,15 @@
     }
 
     // puts one slide in the viewer — used by the series itself and by the
-    // hover previews on the project titles. `soft` (hover only) holds the
-    // photograph that was on screen and fades the new one in over it.
-    var ghostTimer;
-    function renderSlide(sl, soft) {
+    // hover previews on the project titles
+    function renderSlide(sl) {
       var p = PROJECTS[sl.proj];
-      clearTimeout(ghostTimer);
-      var oldGhost = mainWrap.querySelector('.ghost');
-      if (oldGhost) oldGhost.remove();
-      if (soft && mainWrap.children.length) {
-        var ghost = document.createElement('div');
-        ghost.className = 'ghost' + (mainWrap.classList.contains('pair') ? ' pair' : '');
-        while (mainWrap.firstChild) ghost.appendChild(mainWrap.firstChild);
-        mainWrap.appendChild(ghost);
-        ghostTimer = setTimeout(function () { ghost.remove(); }, 1000);
-      } else {
-        mainWrap.innerHTML = '';
-      }
+      mainWrap.innerHTML = '';
       mainWrap.classList.toggle('pair', sl.idxs.length === 2);
-      // what the cursor tip reads over the photograph, e.g. "3/8" or "3–4/8"
-      mainWrap.dataset.nums = sl.idxs.map(function (k) { return k + 1; }).join('–') + '/' + p.photos.length;
       sl.idxs.forEach(function (k) {
         var img = photoImg(p, k, true);
-        if (soft) img.classList.add('soft');
+        // what the cursor tip reads over this print, e.g. "2/6"
+        img.dataset.num = (k + 1) + '/' + p.photos.length;
         // inside the print: a zoomable lightbox that can still walk the
         // whole archive; outside it, the halves navigate
         img.addEventListener('click', function () {
@@ -224,7 +210,7 @@
     document.body.appendChild(tip);
     mainWrap.addEventListener('mousemove', function (e) {
       if (e.target.classList && e.target.classList.contains('photo')) {
-        tip.textContent = mainWrap.dataset.nums || '';
+        tip.textContent = e.target.dataset.num || '';
         tip.style.left = (e.clientX + 16) + 'px';
         tip.style.top = (e.clientY + 12) + 'px';
         tip.style.display = 'block';
